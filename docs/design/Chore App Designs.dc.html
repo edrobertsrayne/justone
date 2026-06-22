@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;family=Nunito+Sans:wght@400;600;700;800&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&amp;family=Work+Sans:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;-webkit-font-smoothing:antialiased;}
+  @keyframes pop{0%{transform:scale(.3);opacity:0;}60%{transform:scale(1.12);}100%{transform:scale(1);opacity:1;}}
+  @keyframes rise{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  @keyframes toastin{from{transform:translate(-50%,16px);opacity:0;}to{transform:translate(-50%,0);opacity:1;}}
+  @keyframes toasttop{from{transform:translate(-50%,-16px);opacity:0;}to{transform:translate(-50%,0);opacity:1;}}
+  @keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+  @keyframes fadein{from{opacity:0;}to{opacity:1;}}
+  @keyframes fillscale{from{transform:scale(0);}to{transform:scale(1);}}
+  @keyframes holdwash{from{opacity:.05;}to{opacity:.52;}}
+</style>
+</helmet>
+
+<div style="min-width:100%; min-height:100vh; box-sizing:border-box; padding:56px 48px 96px; background:#e7e5df; font-family:'Nunito Sans',sans-serif; color:#2b2824;">
+
+  <!-- ===== RATIONALE ===== -->
+  <div style="max-width:760px; margin-bottom:14px;">
+    <div style="font:700 12.4px/1 'Nunito Sans'; letter-spacing:.2em; text-transform:uppercase; color:#a39c8e;">Design proposal · v1</div>
+    <h1 style="font:500 45.5px/1.05 'Newsreader'; letter-spacing:-.02em; margin:14px 0 0; color:#1f1d1a;">The one-task-a-day chore app</h1>
+    <p style="font:400 17.7px/1.65 'Nunito Sans'; color:#5c574e; max-width:680px; margin:20px 0 0;">Working from your spec. The product's whole personality is <em>restraint</em> — it shows one thing, nudges a few times, then respects your no. So the design has to feel calm before it feels clever. Below: my reading of the system, three visual directions to react to, a working prototype from onboarding through the daily loop, and every remaining screen.</p>
+  </div>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap; max-width:980px; margin:32px 0 8px;">
+    <div style="flex:1; min-width:220px; background:#fff; border-radius:4px; padding:20px 22px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+      <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63;">The sacred path</div>
+      <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:10px 0 0;">One card. Swipe right to <strong>do</strong>, left to <strong>skip</strong>, long-press to <strong>remove</strong>. Completing is the <em>only</em> way to advance anything — it lives nowhere but here.</p>
+    </div>
+    <div style="flex:1; min-width:220px; background:#fff; border-radius:4px; padding:20px 22px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+      <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63;">One honest cue</div>
+      <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:10px 0 0;">No pips, no counters, no streak number on the daily screen. The card's only ambient signal is <strong>warmth</strong> — it glows warmer the more overdue the task. Everything else is silence.</p>
+    </div>
+    <div style="flex:1; min-width:220px; background:#fff; border-radius:4px; padding:20px 22px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+      <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63;">Two tiers, one loss</div>
+      <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:10px 0 0;">Streak = showing up (≥1). Target = doing well (N). Only the streak can break; the reward only ever accumulates — so the reveal celebrates, never threatens.</p>
+    </div>
+  </div>
+
+  <!-- ===== INTERACTIVE PROTOTYPE ===== -->
+  <div style="margin-top:64px;">
+    <div style="display:flex; align-items:baseline; gap:14px; max-width:760px;">
+      <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Working prototype</h2>
+      <span style="font:600 12.4px/1 'Nunito Sans'; color:#a39c8e;">Direction A — “Clearing” · live, try it</span>
+    </div>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:620px; margin:12px 0 0;">It opens on the <strong>Just One</strong> welcome screen — sign in (any button) to set your daily target and add your first chores, then you land on the daily loop. Drag the card right to complete, left to skip (costs a reroll), or press &amp; hold to remove. The <span style="color:#2b2824;">+</span> captures a new chore, then offers optional enrichment.</p>
+
+    <div style="display:flex; gap:48px; align-items:flex-start; margin-top:28px;">
+      <div style="flex:none;">
+        <div style="font:600 12.4px/1 'Nunito Sans'; letter-spacing:.04em; color:#8a847a; margin-bottom:12px;">Onboarding → daily loop — interactive</div>
+
+        <!-- PHONE -->
+        <div style="position:relative; width:322px; height:680px; background:#1b1916; border-radius:46px; padding:11px; box-shadow:0 30px 70px -22px rgba(40,35,28,.5), inset 0 0 0 2px #2f2c27;">
+          
+        <div style="position:relative; width:300px; height:658px; background:#f3f1ec; border-radius:36px; overflow:hidden; font-family:'Nunito Sans',sans-serif;">
+
+            <!-- WELCOME / LOGIN -->
+            <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; padding:64px 28px 38px;">
+              <div style="position:absolute; left:50%; bottom:-120px; transform:translateX(-50%); width:300px; height:260px; border-radius:50%; filter:blur(62px); background:#5f8c63; opacity:.16; z-index:0;"></div>
+              <div style="position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="position:relative; width:42px; height:42px; display:flex; align-items:center; justify-content:center; margin-bottom:26px;">
+                  <div style="position:absolute; width:96px; height:96px; border-radius:50%; background:#5f8c63; filter:blur(20px); opacity:.4;"></div>
+                  <div style="position:relative; width:42px; height:42px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;"><svg width="28" height="28" viewBox="0 0 100 100" fill="none"><path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#f3f1ec" stroke-width="13" stroke-linecap="round" fill="none"></path></svg></div>
+                </div>
+                <div style="font:500 45.5px/1 'Newsreader'; letter-spacing:-.02em; color:#2b2824; white-space:nowrap;">Just One</div>
+                <div style="font:400 15.8px/1.5 'Nunito Sans'; color:#8f8a80; margin-top:16px; max-width:200px;">Just one thing today. That's enough.</div>
+              </div>
+              <div style="position:relative; z-index:2; display:flex; flex-direction:column; gap:10px;">
+                <div onClick="{{ onStartOnboard }}" style="text-align:center; padding:15px; border-radius:14px; background:#2b2824; color:#f3f1ec; font:700 14px/1 'Nunito Sans'; cursor:pointer;">Continue with Google</div>
+                <div onClick="{{ onStartOnboard }}" style="text-align:center; padding:15px; border-radius:14px; background:#fff; border:1.5px solid #e2dccf; color:#2b2824; font:700 14px/1 'Nunito Sans'; cursor:pointer;">Continue with Apple</div>
+                <div onClick="{{ onStartOnboard }}" style="text-align:center; padding:8px; font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; cursor:pointer; margin-top:2px;">Continue with email</div>
+                <div style="text-align:center; font:400 11.1px/1.4 'Nunito Sans'; color:#b3ac9e; margin-top:8px;">By continuing you agree to our Terms &amp; Privacy.</div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- ONBOARD: TARGET -->
+            <sc-if value="{{ isOnboardTarget }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; padding:50px 28px 38px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div onClick="{{ onboardBackWelcome }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font:600 17.7px/1 'Nunito Sans'; color:#6f6a60;">‹</div>
+                <div style="font: 700 9.8px/1 'Nunito Sans'; letter-spacing: .16em; text-transform: uppercase; color: #b3ac9e; font-size: 12.4px">Step 1 of 2</div>
+                <div style="width:40px;"></div>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="font: 700 9.8px/1 'Nunito Sans'; letter-spacing: .22em; text-transform: uppercase; color: #5f8c63; margin-bottom: 14px; font-size: 14px">Daily target</div>
+                <div style="font: 500 28.4px/1.2 'Newsreader'; color: #2b2824; max-width: 230px; font-size: 31.9px">How much is enough?</div>
+                <div style="font:400 14px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:12px; max-width:215px;">Finish this many in a day and you've done enough. Change it whenever.</div>
+                <div style="display:flex; gap:9px; margin-top:30px;">
+                  <sc-for list="{{ targetDots }}" as="d" hint-placeholder-count="3">
+                    <div style="width:13px; height:13px; border-radius:50%; background:#5f8c63; box-shadow:0 0 0 4px rgba(95,140,99,.14);"></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex; align-items:center; gap:18px; margin-top:28px;">
+                  <div onClick="{{ onTargetDec }}" style="{{ targetDecStyle }}">−</div>
+                  <div style="width:64px; text-align:center; font:500 57.5px/1 'Newsreader'; color:#2b2824;">{{ targetVal }}</div>
+                  <div onClick="{{ onTargetInc }}" style="{{ targetIncStyle }}">+</div>
+                </div>
+                <div style="font: 600 11.1px/1 'Nunito Sans'; letter-spacing: .04em; color: #a8a193; margin-top: 14px; font-size: 12.4px">things a day</div>
+              </div>
+              <div onClick="{{ onboardToAdd }}" style="text-align:center; padding:15px; border-radius:14px; background:#2b2824; color:#f3f1ec; font:700 14px/1 'Nunito Sans'; cursor:pointer;">Continue</div>
+            </div>
+            </sc-if>
+
+            <!-- ONBOARD: ADD FIRST CHORES -->
+            <sc-if value="{{ isOnboardAdd }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; padding:50px 28px 38px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div onClick="{{ onboardBackTarget }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font:600 17.7px/1 'Nunito Sans'; color:#6f6a60;">‹</div>
+                <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#b3ac9e;">Step 2 of 2</div>
+                <div style="width:40px;"></div>
+              </div>
+              <div style="margin-top:18px;">
+                <div style="font:500 28.4px/1.2 'Newsreader'; color:#2b2824;">What's on your plate?</div>
+                <div style="font:400 14px/1.5 'Nunito Sans'; color:#8f8a80; margin-top:10px; max-width:240px;">Add a few. We'll surface one at a time — never the whole list.</div>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:18px;">
+                <input value="{{ onboardDraft }}" onInput="{{ onOnboardDraft }}" placeholder="Add a chore…" style="flex:1; min-width:0; border:1.5px solid #e7e2d8; outline:none; background:#fff; border-radius:12px; padding:12px 14px; font:500 15.8px/1.2 'Nunito Sans'; color:#2b2824;">
+                <div onClick="{{ onOnboardAddItem }}" style="flex:none; padding:0 16px; display:flex; align-items:center; border-radius:12px; background:#2b2824; color:#f3f1ec; font:700 12.4px/1 'Nunito Sans'; cursor:pointer;">Add</div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
+                <sc-for list="{{ suggestChips }}" as="c" hint-placeholder-count="4">
+                  <div onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</div>
+                </sc-for>
+              </div>
+              <div style="flex:1; overflow:auto; margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+                <sc-for list="{{ onboardItems }}" as="it" hint-placeholder-count="0">
+                  <div style="display:flex; align-items:center; gap:10px; background:#fff; border-radius:13px; padding:13px 14px; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                    <div style="width:8px; height:8px; border-radius:50%; background:#5f8c63; flex:none;"></div>
+                    <div style="flex:1; font:500 15.8px/1.2 'Newsreader'; color:#2b2824;">{{ it.label }}</div>
+                    <div onClick="{{ it.onRemove }}" style="flex:none; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#c2683f; font:700 17.7px/1 'Nunito Sans';">×</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div onClick="{{ onFinishOnboard }}" style="text-align:center; padding:15px; border-radius:14px; background:#2b2824; color:#f3f1ec; font:700 14px/1 'Nunito Sans'; cursor:pointer; margin-top:12px;">Start Just One</div>
+            </div>
+            </sc-if>
+
+            <!-- DAILY -->
+            <sc-if value="{{ isDaily }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden;">
+              <div style="{{ haloStyle }}"></div>
+              <div ref="{{ dragOverlayRef }}" style="position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0; transition:opacity .12s ease;"></div>
+              <sc-if value="{{ holding }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; inset:0; z-index:7; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:rgba(243,241,236,.3); animation:fadein .16s ease both;">
+                <div style="{{ holdWashStyle }}"></div>
+                <div style="position:relative; z-index:2; width:78px; height:78px;">
+                  <div style="position:absolute; inset:0; border-radius:50%; border:3px solid rgba(43,40,36,.2); background:rgba(255,255,255,.92);"></div>
+                  <div style="{{ holdDiscStyle }}"></div>
+                  <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><div style="width:24px; height:3px; border-radius:2px; background:#2b2824;"></div></div>
+                </div>
+                <div style="position:relative; z-index:2; font:800 11.1px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#2b2824;">Hold to remove</div>
+              </div>
+              </sc-if>
+              <div style="position:relative; z-index:5; padding:52px 22px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div onClick="{{ onManage }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                  <div style="width:15px; height:2px; background:#8a847a; border-radius:2px; box-shadow:0 -5px 0 #8a847a, 0 5px 0 #8a847a;"></div>
+                </div>
+                <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.2em; text-transform:uppercase; color:#c2bcae;">Today</div>
+                <div onClick="{{ onStats }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a847a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="13"></line><line x1="12" y1="20" x2="12" y2="8"></line><line x1="18" y1="20" x2="18" y2="4"></line></svg>
+                </div>
+              </div>
+
+              <div ref="{{ cardRef }}" onPointerDown="{{ onCardDown }}" onPointerMove="{{ onCardMove }}" onPointerUp="{{ onCardUp }}" onPointerLeave="{{ onCardUp }}" style="position:relative; z-index:2; flex:1; padding:10px 30px 0; display:flex; flex-direction:column; justify-content:center; cursor:grab; touch-action:none; user-select:none; transition:transform .25s cubic-bezier(.2,.8,.3,1), opacity .25s ease;">
+                <div ref="{{ doneHintRef }}" style="position:absolute; top:0; left:30px; z-index:4; padding:8px 15px; border-radius:20px; background:#5f8c63; color:#fff; font:800 11.1px/1 'Nunito Sans'; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 8px 18px -6px rgba(95,140,99,.65); opacity:0;">✓ Done</div>
+                <div ref="{{ skipHintRef }}" style="position:absolute; top:0; right:30px; z-index:4; padding:8px 15px; border-radius:20px; background:#6f8099; color:#fff; font:800 11.1px/1 'Nunito Sans'; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 8px 18px -6px rgba(111,128,153,.65); opacity:0;">Skip ✕</div>
+                <div style="font:500 40.4px/1.16 'Newsreader'; letter-spacing:-.015em; color:#2b2824; text-wrap:pretty;">{{ task.title }}</div>
+              </div>
+
+              <div onClick="{{ onFab }}" style="position:absolute; right:22px; bottom:30px; width:56px; height:56px; border-radius:19px; background:#2b2824; box-shadow:0 14px 26px -8px rgba(43,40,36,.55); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:6;">
+                <div style="position:relative; width:18px; height:18px;">
+                  <div style="position:absolute; top:8px; left:0; width:18px; height:2.5px; background:#f3f1ec; border-radius:2px;"></div>
+                  <div style="position:absolute; left:8px; top:0; width:2.5px; height:18px; background:#f3f1ec; border-radius:2px;"></div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- EMPTY POOL -->
+            <sc-if value="{{ isEmptyPool }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; padding:54px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+              <div style="width:96px; height:96px; border-radius:50%; background:radial-gradient(circle at 50% 42%, #e9eee2, #f3f1ec); display:flex; align-items:center; justify-content:center;">
+                <div style="width:38px; height:38px; border-radius:50%; background:#dfe5d8;"></div>
+              </div>
+              <div style="font:500 28.4px/1.2 'Newsreader'; color:#2b2824; margin-top:30px;">Your pool<br>is empty</div>
+              <div style="font:400 15.8px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:14px; max-width:210px;">Nothing to do, and nothing hanging over you. Add a chore whenever one turns up.</div>
+              <div onClick="{{ onFab }}" style="margin-top:30px; padding:13px 24px; border-radius:14px; background:#2b2824; font:700 12.4px/1 'Nunito Sans'; color:#f3f1ec; cursor:pointer;">Add a chore</div>
+            </div>
+            </sc-if>
+
+            <!-- TARGET HIT -->
+            <sc-if value="{{ isTargetHit }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; padding: 50px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 302px; height: 656px">
+              
+              <div style="display:flex; gap:9px; margin-bottom:24px; animation:pop .55s cubic-bezier(.2,.9,.3,1.3) both;">
+                <sc-for list="{{ targetDots }}" as="d" hint-placeholder-count="3">
+                  <div style="width:14px; height:14px; border-radius:50%; background:#5f8c63; box-shadow:0 0 0 4px rgba(95,140,99,.16);"></div>
+                </sc-for>
+              </div>
+              <div style="font: 500 28.4px/1.25 'Newsreader'; color: #5F8C63; animation: rise .5s .12s ease both">Daily target met</div>
+              
+
+              <div style="display:flex; align-items:stretch; margin-top:28px; background:#fff; border-radius:18px; box-shadow:0 1px 3px rgba(43,40,36,.07); animation:rise .5s .26s ease both;">
+                <div style="flex:1; padding:18px 24px; text-align:center;">
+                  <div style="font:500 40.4px/1 'Newsreader'; color:#5f8c63;">{{ streak }}</div>
+                  <div style="font:700 8.7px/1.2 'Nunito Sans'; letter-spacing:.1em; text-transform:uppercase; color:#a8a193; margin-top:8px;">Day streak</div>
+                  <div style="font:400 11.1px/1.3 'Nunito Sans'; color:#bdb7ab; margin-top:3px;">showed up</div>
+                </div>
+                <div style="width:1px; background:#efe9de; margin:16px 0;"></div>
+                <div style="flex:1; padding:18px 24px; text-align:center;">
+                  <div style="font:500 40.4px/1 'Newsreader'; color:#2b2824;">{{ targetMetDays }}</div>
+                  <div style="font:700 8.7px/1.2 'Nunito Sans'; letter-spacing:.1em; text-transform:uppercase; color:#a8a193; margin-top:8px;">On target</div>
+                  <div style="font:400 11.1px/1.3 'Nunito Sans'; color:#bdb7ab; margin-top:3px;">hit full goal</div>
+                </div>
+              </div>
+
+              <div style="font:400 14px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:24px; max-width:210px; animation:rise .5s .34s ease both;">You've done enough for today.</div>
+              <div onClick="{{ onKeepGoing }}" style="margin-top:24px; padding:13px 22px; border:1.5px solid #ddd6c9; border-radius:14px; font:700 12.4px/1 'Nunito Sans'; color:#6f6a60; cursor:pointer; animation:rise .5s .42s ease both;">Keep going!</div>
+            </div>
+            </sc-if>
+
+            <!-- CLEARED -->
+            <sc-if value="{{ isCleared }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; padding:54px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+              <div style="width:96px; height:96px; border-radius:50%; background:radial-gradient(circle at 50% 42%, #e9eee2, #f3f1ec); display:flex; align-items:center; justify-content:center; animation:breathe 4.5s ease-in-out infinite;">
+                <div style="width:40px; height:40px; border-radius:50%; background:#5f8c63;"></div>
+              </div>
+              <div style="font:500 28.4px/1.2 'Newsreader'; color:#2b2824; margin-top:30px;">You’re on top<br>of things</div>
+              <div style="font:400 15.8px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:14px; max-width:200px;">Nothing left in the pool. Enjoy the quiet.</div>
+              <div onClick="{{ onManage }}" style="margin-top:30px; padding:13px 22px; border:1.5px solid #ddd6c9; border-radius:14px; font:700 12.4px/1 'Nunito Sans'; color:#6f6a60; cursor:pointer;">Review pool</div>
+            </div>
+            </sc-if>
+
+            <!-- MANAGE -->
+            <sc-if value="{{ isManage }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; background:#f3f1ec; display:flex; flex-direction:column;">
+              <div style="padding:50px 22px 14px; display:flex; align-items:center; justify-content:space-between;">
+                <div onClick="{{ onBackDaily }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font:600 17.7px/1 'Nunito Sans'; color:#6f6a60;">‹</div>
+                <div style="font:600 15.8px/1 'Newsreader'; color:#2b2824;">Your pool</div>
+                <div onClick="{{ onSettings }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8a847a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+              </div>
+              <div style="height:8px;"></div>
+              <div style="flex:1; overflow:auto; padding:0 16px 90px;">
+                <sc-for list="{{ manageTasks }}" as="t" hint-placeholder-count="5">
+                  <div onClick="{{ t.onEdit }}" style="background:#fff; border-radius:16px; padding:15px 17px; margin-bottom:9px; box-shadow:0 1px 2px rgba(43,40,36,.05); cursor:pointer; display:flex; align-items:center; gap:13px;">
+                    <div style="{{ t.dotStyle }}"></div>
+                    <div style="flex:1;">
+                      <div style="font:500 15.8px/1.25 'Newsreader'; color:#2b2824;">{{ t.title }}</div>
+                      <div style="font:600 11.1px/1 'Nunito Sans'; letter-spacing:.02em; color:#a8a193; margin-top:5px;">{{ t.meta }}</div>
+                    </div>
+                    <div onClick="{{ t.onDelete }}" style="flex:none; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;" style-hover="background:#f6ece7;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2683f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div onClick="{{ onFab }}" style="position:absolute; right:22px; bottom:30px; width:56px; height:56px; border-radius:19px; background:#2b2824; box-shadow:0 14px 26px -8px rgba(43,40,36,.55); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                <div style="position:relative; width:18px; height:18px;">
+                  <div style="position:absolute; top:8px; left:0; width:18px; height:2.5px; background:#f3f1ec; border-radius:2px;"></div>
+                  <div style="position:absolute; left:8px; top:0; width:2.5px; height:18px; background:#f3f1ec; border-radius:2px;"></div>
+                </div>
+              </div>
+
+              <sc-if value="{{ hasPendingDelete }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; inset:0; z-index:20; background:rgba(43,40,36,.4); display:flex; align-items:center; justify-content:center; padding:26px;">
+                <div onClick="{{ onCancelDelete }}" style="position:absolute; inset:0; cursor:pointer;"></div>
+                <div style="position:relative; z-index:2; width:100%; background:#fff; border-radius:24px; padding:24px 22px 18px; box-shadow:0 24px 50px -16px rgba(43,40,36,.5); animation:pop .32s cubic-bezier(.2,.9,.3,1.2) both; text-align:center;">
+                  <div style="margin:0 auto 14px; width:46px; height:46px; border-radius:14px; background:#f6ece7; display:flex; align-items:center; justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c2683f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  </div>
+                  <div style="font:500 19.9px/1.3 'Newsreader'; color:#2b2824;">Delete this chore?</div>
+                  <div style="font:400 14px/1.5 'Nunito Sans'; color:#8f8a80; margin:8px 0 20px;">“{{ pendingDeleteTitle }}” will be gone for good. This can’t be undone.</div>
+                  <div style="display:flex; gap:10px;">
+                    <div onClick="{{ onCancelDelete }}" style="flex:1; text-align:center; padding:14px; border-radius:14px; background:#f1ede4; font:700 14px/1 'Nunito Sans'; color:#6f6a60; cursor:pointer;">Cancel</div>
+                    <div onClick="{{ onConfirmDelete }}" style="flex:1; text-align:center; padding:14px; border-radius:14px; background:#c2683f; font:700 14px/1 'Nunito Sans'; color:#fff; cursor:pointer;">Delete</div>
+                  </div>
+                </div>
+              </div>
+              </sc-if>
+            </div>
+            </sc-if>
+
+            <!-- SETTINGS -->
+            <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; background:#f3f1ec; display:flex; flex-direction:column;">
+              <div style="padding:50px 22px 14px; display:flex; align-items:center; justify-content:space-between;">
+                <div onClick="{{ onManage }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font:600 17.7px/1 'Nunito Sans'; color:#6f6a60;">‹</div>
+                <div style="font:600 15.8px/1 'Newsreader'; color:#2b2824;">Reminders</div>
+                <div style="width:40px;"></div>
+              </div>
+              <div style="flex:1; overflow:auto; padding:8px 22px 30px;">
+                <div style="background:#fff; border-radius:16px; padding:15px 17px; margin-bottom:18px; box-shadow:0 1px 2px rgba(43,40,36,.05); display:flex; align-items:center; justify-content:space-between;">
+                  <div>
+                    <div style="font:500 15.8px/1 'Newsreader'; color:#2b2824;">Daily target</div>
+                    <div style="font:600 11.1px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Tasks before today counts as a win</div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:11px;">
+                    <div onClick="{{ onTargetDec }}" style="{{ targetDecStyle }}">−</div>
+                    <div style="width:28px; text-align:center; font:500 28.4px/1 'Newsreader'; color:#2b2824;">{{ targetVal }}</div>
+                    <div onClick="{{ onTargetInc }}" style="{{ targetIncStyle }}">+</div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; background:#e9e5dc; border-radius:13px; padding:4px; margin-bottom:18px;">
+                  <div style="flex:1; text-align:center; padding:9px; border-radius:10px; background:#fff; font:700 12.4px/1 'Nunito Sans'; color:#2b2824; box-shadow:0 1px 2px rgba(43,40,36,.06);">Weekdays</div>
+                  <div style="flex:1; text-align:center; padding:9px; border-radius:10px; font:700 12.4px/1 'Nunito Sans'; color:#a8a193;">Weekends</div>
+                </div>
+                <div style="height:6px;"></div>
+                <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 17px; border-bottom:1px solid #efe9de;">
+                    <div><div style="font:500 15.8px/1 'Newsreader'; color:#2b2824;">08:30</div><div style="font:600 11.1px/1 'Nunito Sans'; color:#a8a193; margin-top:5px;">Morning · gentle</div></div>
+                    <div style="width:42px; height:25px; border-radius:13px; background:#5f8c63; position:relative;"><div style="position:absolute; top:2px; right:2px; width:21px; height:21px; border-radius:50%; background:#fff;"></div></div>
+                  </div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 17px; border-bottom:1px solid #efe9de;">
+                    <div><div style="font:500 15.8px/1 'Newsreader'; color:#2b2824;">18:00</div><div style="font:600 11.1px/1 'Nunito Sans'; color:#a8a193; margin-top:5px;">Early evening · gentle</div></div>
+                    <div style="width:42px; height:25px; border-radius:13px; background:#5f8c63; position:relative;"><div style="position:absolute; top:2px; right:2px; width:21px; height:21px; border-radius:50%; background:#fff;"></div></div>
+                  </div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 17px;">
+                    <div><div style="font:500 15.8px/1 'Newsreader'; color:#2b2824;">21:30</div><div style="font:600 11.1px/1 'Nunito Sans'; color:#a8a193; margin-top:5px;">Last beat · real stakes</div></div>
+                    <div style="width:42px; height:25px; border-radius:13px; background:#5f8c63; position:relative;"><div style="position:absolute; top:2px; right:2px; width:21px; height:21px; border-radius:50%; background:#fff;"></div></div>
+                  </div>
+                </div>
+                <div style="margin-top:22px; padding:15px 17px; background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(43,40,36,.05); display:flex; align-items:center; justify-content:space-between;">
+                  <div style="font:600 14px/1.3 'Nunito Sans'; color:#6f6a60;">Signed in · sync on</div>
+                  <div style="font:700 12.4px/1 'Nunito Sans'; color:#c2683f; cursor:pointer;">Sign out</div>
+                </div>
+                <div style="text-align:center; margin-top:22px;">
+                  <span style="font:500 15.8px/1 'Newsreader'; color:#c2bcae;">Just One</span>
+                  <span style="font:600 9.8px/1 'Nunito Sans'; letter-spacing:.12em; color:#cfc9bd; margin-left:7px;">v1.0</span>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- STATS -->
+            <sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; background:#f3f1ec; display:flex; flex-direction:column;">
+              <div style="padding:50px 22px 14px; display:flex; align-items:center; justify-content:space-between;">
+                <div onClick="{{ onBackDaily }}" style="width:40px; height:40px; border-radius:13px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font:600 17.7px/1 'Nunito Sans'; color:#6f6a60;">‹</div>
+                <div style="font:600 15.8px/1 'Newsreader'; color:#2b2824;">Your stats</div>
+                <div style="width:40px;"></div>
+              </div>
+              <div style="flex:1; overflow:auto; padding:8px 22px 30px;">
+                <div style="background:#2f4233; border-radius:22px; padding:26px 22px; text-align:center; margin-bottom:14px;">
+                  <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#93a58f;">Current streak</div>
+                  <div style="font:500 72.8px/1 'Newsreader'; color:#e8c98f; margin-top:10px;">{{ streak }}</div>
+                  <div style="font:500 15.8px/1 'Newsreader'; color:#eef2e8; margin-top:2px;">days showing up</div>
+                </div>
+                <div style="display:flex; gap:11px; margin-bottom:11px;">
+                  <div style="flex:1; background:#fff; border-radius:18px; padding:18px; text-align:center; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                    <div style="font:500 35.9px/1 'Newsreader'; color:#3a5240;">{{ targetMetDays }}</div>
+                    <div style="font:600 11.1px/1.3 'Nunito Sans'; letter-spacing:.02em; color:#a8a193; margin-top:8px;">Days at target</div>
+                  </div>
+                  <div style="flex:1; background:#fff; border-radius:18px; padding:18px; text-align:center; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                    <div style="font:500 35.9px/1 'Newsreader'; color:#2b2824;">{{ bestStreak }}</div>
+                    <div style="font:600 11.1px/1.3 'Nunito Sans'; letter-spacing:.02em; color:#a8a193; margin-top:8px;">Longest streak</div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:11px;">
+                  <div style="flex:1; background:#fff; border-radius:18px; padding:18px; text-align:center; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                    <div style="font:500 35.9px/1 'Newsreader'; color:#2b2824;">{{ lifetimeDone }}</div>
+                    <div style="font:600 11.1px/1.3 'Nunito Sans'; letter-spacing:.02em; color:#a8a193; margin-top:8px;">Chores completed</div>
+                  </div>
+                  <div style="flex:1; background:#fff; border-radius:18px; padding:18px; text-align:center; box-shadow:0 1px 2px rgba(43,40,36,.05);">
+                    <div style="font:500 35.9px/1 'Newsreader'; color:#2b2824;">{{ poolCount }}</div>
+                    <div style="font:600 11.1px/1.3 'Nunito Sans'; letter-spacing:.02em; color:#a8a193; margin-top:8px;">In your pool</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- ADD SHEET -->
+            <sc-if value="{{ isAdd }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; background:rgba(43,40,36,.32); display:flex; flex-direction:column; justify-content:flex-end;">
+              <div onClick="{{ onBackDaily }}" style="flex:1; cursor:pointer;"></div>
+              <div style="background:#fff; border-radius:28px 28px 36px 36px; padding:22px 22px 30px; animation:rise .28s ease both;">
+                <div style="width:38px; height:4px; border-radius:2px; background:#e2dccf; margin:0 auto 18px;"></div>
+                <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#a8a193;">New chore</div>
+                <input value="{{ draftValue }}" onInput="{{ onDraft }}" placeholder="What needs doing?" style="width:100%; border:none; outline:none; background:transparent; font:500 25.2px/1.3 'Newsreader'; color:#2b2824; margin:14px 0 18px; padding:0;">
+                <div style="display:flex; gap:10px;">
+                  <div onClick="{{ onBackDaily }}" style="flex:none; padding:14px 20px; border-radius:14px; background:#f1ede4; font:700 14px/1 'Nunito Sans'; color:#8a847a; cursor:pointer;">Cancel</div>
+                  <div onClick="{{ onAddCreate }}" style="flex:1; text-align:center; padding:14px; border-radius:14px; background:#2b2824; font:700 14px/1 'Nunito Sans'; color:#f3f1ec; cursor:pointer;">Add to pool</div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- ENRICH SHEET -->
+            <sc-if value="{{ isEnrich }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; inset:0; background:rgba(43,40,36,.32); display:flex; flex-direction:column; justify-content:flex-end;">
+              <div onClick="{{ onEnrichSave }}" style="flex:1; cursor:pointer;"></div>
+              <div style="background:#fff; border-radius:28px 28px 36px 36px; padding:22px 22px 28px; animation:rise .28s ease both;">
+                <div style="width:38px; height:4px; border-radius:2px; background:#e2dccf; margin:0 auto 16px;"></div>
+                
+                <div style="font:500 22.4px/1.3 'Newsreader'; color:#2b2824; margin:12px 0 20px;">{{ draftValue }}</div>
+                <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#a8a193; margin-bottom:9px;">Deadline</div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+                  <sc-for list="{{ deadlineChips }}" as="c" hint-placeholder-count="4">
+                    <div onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#a8a193; margin-bottom:9px;">Repeat</div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px;">
+                  <sc-for list="{{ recurChips }}" as="c" hint-placeholder-count="4">
+                    <div onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ showCustom }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#f3f6f1; border:1.5px dashed #b7cdb4; border-radius:16px; padding:14px 16px 16px; margin-bottom:22px; animation:rise .22s ease both;">
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+                      <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#5f8c63;">CUSTOM REPEAT</div>
+                      <div style="font:600 12.4px/1 'Nunito Sans'; color:#7e8b78;">{{ customSummary }}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                      <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#a8a193;">Every</div>
+                      <div onClick="{{ onDecCustom }}" style="{{ decStyle }}">−</div>
+                      <div style="width:46px; text-align:center; font:600 25.2px/1 'Newsreader'; color:#2b2824;">{{ customN }}</div>
+                      <div onClick="{{ onIncCustom }}" style="{{ incStyle }}">+</div>
+                    </div>
+                    <div style="display:flex; gap:4px; background:#e7ece4; border-radius:12px; padding:4px;">
+                      <sc-for list="{{ customUnitChips }}" as="u" hint-placeholder-count="3">
+                        <div onClick="{{ u.onClick }}" style="{{ u.style }}">{{ u.label }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <div style="display:flex; gap:10px;">
+                  <div onClick="{{ onEnrichSave }}" style="flex:none; padding:14px 20px; border-radius:14px; background:#f1ede4; font:700 14px/1 'Nunito Sans'; color:#8a847a; cursor:pointer;">Back</div>
+                  <div onClick="{{ onEnrichSave }}" style="flex:1; text-align:center; padding:14px; border-radius:14px; background:#2b2824; font:700 14px/1 'Nunito Sans'; color:#f3f1ec; cursor:pointer;">Save</div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- TOAST -->
+            <sc-if value="{{ showToast }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; top:100px; left:50%; transform:translateX(-50%); background:#2b2824; color:#f3f1ec; font:600 12.4px/1.3 'Nunito Sans'; padding:11px 18px; border-radius:13px; box-shadow:0 12px 24px -8px rgba(43,40,36,.5); white-space:nowrap; z-index:50; animation:toasttop .25s ease both;">{{ toast }}</div>
+            </sc-if>
+
+            <!-- notch -->
+            <div style="position:absolute; top:11px; left:50%; transform:translateX(-50%); width:98px; height:27px; background:#1b1916; border-radius:14px; z-index:60;"></div>
+          </div></div>
+      </div>
+
+      <!-- side notes -->
+      <div style="flex:none; width:300px; padding-top:34px;">
+        <div style="font:500 19.9px/1.35 'Newsreader'; color:#1f1d1a;">What this proves out</div>
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">Swipe physics</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">Card follows your finger with a slight tilt, snaps back under threshold, flings past it. Hold to remove is a separate, deliberate gesture.</p></div>
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">Reactive limits</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">No reroll counter sits on screen. Skip your last one and the card tells you — only then.</p></div>
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">The reveal</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">Streak appears only at the target moment. “Keep going” is pure upside — the banked streak is never at risk.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== THE NAME ===== -->
+  <div style="margin-top:88px;">
+    <div style="display:flex; align-items:baseline; gap:14px;">
+      <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">The name — Just One</h2>
+      <span style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63; background:#eef2e8; padding:6px 10px; border-radius:999px;">Chosen</span>
+    </div>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">Short, ownable, and clearly about getting a task done — while carrying the whole “just one, that's enough” philosophy in two words. It sidesteps the crowded “One Thing” space and the Nike echo of “Just Do One.” This welcome screen is now the live entry point of the prototype above.</p>
+
+    <div style="display:flex; gap:48px; align-items:flex-start; margin-top:30px; flex-wrap:wrap;">
+
+      <!-- JUST ONE (wordmark reference) -->
+      <div style="flex:none; width:322px;">
+        <div style="font:600 12.4px/1 'Nunito Sans'; letter-spacing:.04em; color:#8a847a; margin-bottom:12px;">Welcome screen — wordmark</div>
+        <div style="position:relative; width:322px; height:680px; background:#1b1916; border-radius:46px; padding:11px; box-shadow:0 30px 70px -22px rgba(40,35,28,.5), inset 0 0 0 2px #2f2c27;">
+          <div style="position:relative; width:300px; height:658px; background:#f3f1ec; border-radius:36px; overflow:hidden; font-family:'Nunito Sans',sans-serif;">
+            <div style="position:absolute; left:50%; bottom:-120px; transform:translateX(-50%); width:300px; height:260px; border-radius:50%; filter:blur(62px); background:#5f8c63; opacity:.16; z-index:0;"></div>
+            <div style="position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; padding:64px 28px 38px;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="position:relative; width:42px; height:42px; display:flex; align-items:center; justify-content:center; margin-bottom:26px;">
+                  <div style="position:absolute; width:96px; height:96px; border-radius:50%; background:#5f8c63; filter:blur(20px); opacity:.4;"></div>
+                  <div style="position:relative; width:42px; height:42px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;"><svg width="28" height="28" viewBox="0 0 100 100" fill="none"><path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#f3f1ec" stroke-width="13" stroke-linecap="round" fill="none"></path></svg></div>
+                </div>
+                <div style="font:500 45.5px/1 'Newsreader'; letter-spacing:-.02em; color:#2b2824; white-space:nowrap;">Just One</div>
+                <div style="font:400 15.8px/1.5 'Nunito Sans'; color:#8f8a80; margin-top:16px; max-width:200px;">Just one thing today. That's enough.</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="text-align:center; padding:15px; border-radius:14px; background:#2b2824; color:#f3f1ec; font:700 14px/1 'Nunito Sans'; cursor:pointer;">Continue with Apple</div>
+                <div style="text-align:center; padding:15px; border-radius:14px; background:#fff; border:1.5px solid #e2dccf; color:#2b2824; font:700 14px/1 'Nunito Sans'; cursor:pointer;">Continue with Google</div>
+                <div style="text-align:center; padding:8px; font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; cursor:pointer; margin-top:2px;">Continue with email</div>
+                <div style="text-align:center; font:400 11.1px/1.4 'Nunito Sans'; color:#b3ac9e; margin-top:8px;">By continuing you agree to our Terms &amp; Privacy.</div>
+              </div>
+            </div>
+            <div style="position:absolute; top:11px; left:50%; transform:translateX(-50%); width:98px; height:27px; background:#1b1916; border-radius:14px; z-index:60;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- name notes -->
+      <div style="flex:none; width:300px; padding-top:34px;">
+        <div style="font:500 19.9px/1.35 'Newsreader'; color:#1f1d1a;">Why it works</div>
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">Says what it does</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">“One” reads as one task — the single-card mechanic is right there in the name.</p></div>
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">Carries the feeling</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">“Just” softens it — just one, no pressure. The reassurance is built in.</p></div>
+          <div><div style="font:700 12.4px/1 'Nunito Sans'; color:#5f8c63; letter-spacing:.02em;">Ownable</div><p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:5px 0 0;">Two short words, easy as a wordmark, handle, and URL. Worth a quick trademark + domain check before lock-in.</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== APP ICON ===== -->
+  <div style="margin-top:88px;">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;">
+      <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">App icon</h2>
+      <span style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63; background:#eef2e8; padding:6px 10px; border-radius:999px;">Landed on Halo · warm solo</span>
+    </div>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">The exploration below, kept as a record. We set the <strong>leaf</strong> aside — it signalled the palette and a calm mood but didn't represent the product idea, and it was a second symbol competing with the dot. The brand now reads from <strong>one mark: the glowing dot</strong> (the one lit thing among the quiet), landing on the warm solo treatment. Each candidate is shown large + home-screen size, since an icon has to survive being small next to noisy apps.</p>
+
+    <div style="display:flex; gap:44px; align-items:flex-start; margin-top:32px; flex-wrap:wrap;">
+
+      <!-- 1 · Leaf, warm -->
+      <div style="flex:none; width:200px;">
+        <div style="width:190px; height:190px; border-radius:44px; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="width:84px; height:84px; border-radius:50% 0 50% 50%; background:#5f8c63; transform:rotate(45deg);"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:7px; margin-top:18px;">
+          <div style="width:54px; height:54px; border-radius:13px; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="width:24px; height:24px; border-radius:50% 0 50% 50%; background:#5f8c63; transform:rotate(45deg);"></div>
+          </div>
+          <div style="font:400 11.1px/1 'Nunito Sans'; color:#5c574e;">Just One</div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824; margin-top:18px;">Leaf · warm</div>
+        <div style="font:400 12.4px/1.45 'Nunito Sans'; color:#8a847a; margin-top:4px;">The brand mark, as-is. Calm, on-brand, but the soft background recedes on a busy home screen.</div>
+      </div>
+
+      <!-- 2 · Leaf, evergreen -->
+      <div style="flex:none; width:200px;">
+        <div style="width:190px; height:190px; border-radius:44px; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="width:84px; height:84px; border-radius:50% 0 50% 50%; background:#e8c98f; transform:rotate(45deg);"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:7px; margin-top:18px;">
+          <div style="width:54px; height:54px; border-radius:13px; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="width:24px; height:24px; border-radius:50% 0 50% 50%; background:#e8c98f; transform:rotate(45deg);"></div>
+          </div>
+          <div style="font:400 11.1px/1 'Nunito Sans'; color:#5c574e;">Just One</div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824; margin-top:18px;">Leaf · evergreen</div>
+        <div style="font:400 12.4px/1.45 'Nunito Sans'; color:#8a847a; margin-top:4px;">Same mark on the deep green + gold from the stats hero. Premium, high-contrast, pops when small. <span style="color:#5f8c63; font-weight:700;">My pick.</span></div>
+      </div>
+
+      <!-- 3 · Serif one -->
+      <div style="flex:none; width:200px;">
+        <div style="width:190px; height:190px; border-radius:44px; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="font:500 116.6px/1 'Newsreader'; color:#e8c98f;">1</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:7px; margin-top:18px;">
+          <div style="width:54px; height:54px; border-radius:13px; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="font:500 35.9px/1 'Newsreader'; color:#e8c98f;">1</div>
+          </div>
+          <div style="font:400 11.1px/1 'Nunito Sans'; color:#5c574e;">Just One</div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824; margin-top:18px;">Serif “one”</div>
+        <div style="font:400 12.4px/1.45 'Nunito Sans'; color:#8a847a; margin-top:4px;">Literal — one thing. The Newsreader numeral ties to the wordmark. Elegant, though a bare “1” is less distinctive.</div>
+      </div>
+
+      <!-- 4 · One among many -->
+      <div style="flex:none; width:200px;">
+        <div style="width:190px; height:190px; border-radius:44px; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center; gap:15px;">
+          <div style="width:18px; height:18px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="width:46px; height:46px; border-radius:50%; background:#5f8c63;"></div>
+          <div style="width:18px; height:18px; border-radius:50%; background:#cdd8c6;"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:7px; margin-top:18px;">
+          <div style="width:54px; height:54px; border-radius:13px; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center; gap:5px;">
+            <div style="width:6px; height:6px; border-radius:50%; background:#cdd8c6;"></div>
+            <div style="width:15px; height:15px; border-radius:50%; background:#5f8c63;"></div>
+            <div style="width:6px; height:6px; border-radius:50%; background:#cdd8c6;"></div>
+          </div>
+          <div style="font:400 11.1px/1 'Nunito Sans'; color:#5c574e;">Just One</div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824; margin-top:18px;">One of many</div>
+        <div style="font:400 12.4px/1.45 'Nunito Sans'; color:#8a847a; margin-top:4px;">The whole idea — surface the one that matters, mute the rest. Conceptually sharp; reads as an abstract dot at tiny sizes.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== APP ICON — ONE OF MANY ITERATIONS ===== -->
+  <div style="margin-top:72px;">
+    <h3 style="font:500 22.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">“One of many” — iterations</h3>
+    <p style="font:400 14px/1.6 'Nunito Sans'; color:#5c574e; max-width:600px; margin:10px 0 0;">Same idea — surface the one that matters, mute the rest — explored as layout and treatment. Each shown large + home-screen size, since the test is whether the “one vs. many” relationship survives shrinking.</p>
+
+    <div style="display:flex; gap:40px; align-items:flex-start; margin-top:28px; flex-wrap:wrap;">
+
+      <!-- A · Row, lit center (warm) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center; gap:15px;">
+          <div style="width:17px; height:17px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="width:46px; height:46px; border-radius:50%; background:#5f8c63;"></div>
+          <div style="width:17px; height:17px; border-radius:50%; background:#cdd8c6;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center; gap:5px;">
+            <div style="width:6px; height:6px; border-radius:50%; background:#cdd8c6;"></div>
+            <div style="width:15px; height:15px; border-radius:50%; background:#5f8c63;"></div>
+            <div style="width:6px; height:6px; border-radius:50%; background:#cdd8c6;"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">A · Row<br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- B · Row, evergreen -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center; gap:15px;">
+          <div style="width:17px; height:17px; border-radius:50%; background:#586b59;"></div>
+          <div style="width:46px; height:46px; border-radius:50%; background:#e8c98f;"></div>
+          <div style="width:17px; height:17px; border-radius:50%; background:#586b59;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center; gap:5px;">
+            <div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:15px; height:15px; border-radius:50%; background:#e8c98f;"></div>
+            <div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">B · Row<br><span style="font-weight:400; color:#8a847a;">evergreen</span></div>
+        </div>
+      </div>
+
+      <!-- C · Vertical list, one lit (warm) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="width:30px; height:30px; border-radius:50%; background:#5f8c63;"></div>
+          <div style="width:20px; height:20px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="width:20px; height:20px; border-radius:50%; background:#cdd8c6;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <div style="width:7px; height:7px; border-radius:50%; background:#cdd8c6;"></div>
+            <div style="width:11px; height:11px; border-radius:50%; background:#5f8c63;"></div>
+            <div style="width:7px; height:7px; border-radius:50%; background:#cdd8c6;"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">C · List<br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- D · Grid, one lit (evergreen) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="display:grid; grid-template-columns:repeat(3, 18px); gap:16px;">
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#e8c98f;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+            <div style="width:18px; height:18px; border-radius:50%; background:#586b59;"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="display:grid; grid-template-columns:repeat(3, 6px); gap:4px;">
+              <div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div><div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div><div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div>
+              <div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div><div style="width:6px; height:6px; border-radius:50%; background:#e8c98f;"></div><div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div>
+              <div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div><div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div><div style="width:6px; height:6px; border-radius:50%; background:#586b59;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">D · Grid<br><span style="font-weight:400; color:#8a847a;">evergreen</span></div>
+        </div>
+      </div>
+
+      <!-- E · Halo dot (warm) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center; gap:14px;">
+          <div style="width:15px; height:15px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="position:relative; width:50px; height:50px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:104px; height:104px; border-radius:50%; background:#5f8c63; filter:blur(22px); opacity:.4;"></div>
+            <div style="position:relative; width:50px; height:50px; border-radius:50%; background:#5f8c63;"></div>
+          </div>
+          <div style="width:15px; height:15px; border-radius:50%; background:#cdd8c6;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div style="width:5px; height:5px; border-radius:50%; background:#cdd8c6;"></div>
+            <div style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:34px; height:34px; border-radius:50%; background:#5f8c63; filter:blur(8px); opacity:.4;"></div>
+              <div style="position:relative; width:16px; height:16px; border-radius:50%; background:#5f8c63;"></div>
+            </div>
+            <div style="width:5px; height:5px; border-radius:50%; background:#cdd8c6;"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">E · Halo<br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- F · Overlap / in front (evergreen) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:118px; height:64px;">
+            <div style="position:absolute; left:0; top:15px; width:34px; height:34px; border-radius:50%; background:#586b59;"></div>
+            <div style="position:absolute; right:0; top:15px; width:34px; height:34px; border-radius:50%; background:#586b59;"></div>
+            <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:58px; height:58px; border-radius:50%; background:#e8c98f; box-shadow:0 6px 16px -4px rgba(0,0,0,.4);"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:38px; height:22px;">
+              <div style="position:absolute; left:0; top:5px; width:12px; height:12px; border-radius:50%; background:#586b59;"></div>
+              <div style="position:absolute; right:0; top:5px; width:12px; height:12px; border-radius:50%; background:#586b59;"></div>
+              <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:20px; height:20px; border-radius:50%; background:#e8c98f;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">F · In front<br><span style="font-weight:400; color:#8a847a;">evergreen</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== APP ICON — HALO ITERATIONS ===== -->
+  <div style="margin-top:72px;">
+    <h3 style="font:500 22.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Halo — iterations</h3>
+    <p style="font:400 14px/1.6 'Nunito Sans'; color:#5c574e; max-width:600px; margin:10px 0 0;">Refining the glowing-dot direction — solo vs. flanked, glow vs. ring, and the three background treatments. Each shown large + home-screen size.</p>
+
+    <div style="display:flex; gap:40px; align-items:flex-start; margin-top:28px; flex-wrap:wrap;">
+
+      <!-- 1 · Solo, warm -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:62px; height:62px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:130px; height:130px; border-radius:50%; background:#5f8c63; filter:blur(26px); opacity:.4;"></div>
+            <div style="position:relative; width:62px; height:62px; border-radius:50%; background:#5f8c63;"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:38px; height:38px; border-radius:50%; background:#5f8c63; filter:blur(9px); opacity:.4;"></div>
+              <div style="position:relative; width:18px; height:18px; border-radius:50%; background:#5f8c63;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">1 · Solo <span style="color:#5f8c63;">✓ chosen</span><br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- 2 · Solo, evergreen -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:62px; height:62px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:140px; height:140px; border-radius:50%; background:#e8c98f; filter:blur(28px); opacity:.5;"></div>
+            <div style="position:relative; width:62px; height:62px; border-radius:50%; background:#e8c98f;"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:40px; height:40px; border-radius:50%; background:#e8c98f; filter:blur(10px); opacity:.5;"></div>
+              <div style="position:relative; width:18px; height:18px; border-radius:50%; background:#e8c98f;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">2 · Solo<br><span style="font-weight:400; color:#8a847a;">evergreen</span></div>
+        </div>
+      </div>
+
+      <!-- 3 · Flanked, warm -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center; gap:14px;">
+          <div style="width:15px; height:15px; border-radius:50%; background:#cdd8c6;"></div>
+          <div style="position:relative; width:50px; height:50px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:104px; height:104px; border-radius:50%; background:#5f8c63; filter:blur(22px); opacity:.4;"></div>
+            <div style="position:relative; width:50px; height:50px; border-radius:50%; background:#5f8c63;"></div>
+          </div>
+          <div style="width:15px; height:15px; border-radius:50%; background:#cdd8c6;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center; gap:4px;">
+            <div style="width:5px; height:5px; border-radius:50%; background:#cdd8c6;"></div>
+            <div style="position:relative; width:16px; height:16px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:34px; height:34px; border-radius:50%; background:#5f8c63; filter:blur(8px); opacity:.4;"></div>
+              <div style="position:relative; width:16px; height:16px; border-radius:50%; background:#5f8c63;"></div>
+            </div>
+            <div style="width:5px; height:5px; border-radius:50%; background:#cdd8c6;"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">3 · Flanked<br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- 4 · Ring, warm -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="width:50px; height:50px; border-radius:50%; background:#5f8c63; box-shadow:0 0 0 12px rgba(95,140,99,.20), 0 0 0 26px rgba(95,140,99,.10);"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="width:16px; height:16px; border-radius:50%; background:#5f8c63; box-shadow:0 0 0 4px rgba(95,140,99,.20), 0 0 0 8px rgba(95,140,99,.10);"></div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">4 · Ring<br><span style="font-weight:400; color:#8a847a;">warm</span></div>
+        </div>
+      </div>
+
+      <!-- 5 · Orbit, evergreen -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2f4233; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:120px; height:120px;">
+            <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:120px; height:120px; border-radius:50%; background:#e8c98f; filter:blur(26px); opacity:.42;"></div>
+            <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:54px; height:54px; border-radius:50%; background:#e8c98f;"></div>
+            <div style="position:absolute; left:50%; top:2px; transform:translateX(-50%); width:13px; height:13px; border-radius:50%; background:#586b59;"></div>
+            <div style="position:absolute; left:4px; bottom:8px; width:13px; height:13px; border-radius:50%; background:#586b59;"></div>
+            <div style="position:absolute; right:4px; bottom:8px; width:13px; height:13px; border-radius:50%; background:#586b59;"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2f4233; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:42px; height:42px;">
+              <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:42px; height:42px; border-radius:50%; background:#e8c98f; filter:blur(9px); opacity:.42;"></div>
+              <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:18px; height:18px; border-radius:50%; background:#e8c98f;"></div>
+              <div style="position:absolute; left:50%; top:0; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:#586b59;"></div>
+              <div style="position:absolute; left:2px; bottom:3px; width:5px; height:5px; border-radius:50%; background:#586b59;"></div>
+              <div style="position:absolute; right:2px; bottom:3px; width:5px; height:5px; border-radius:50%; background:#586b59;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">5 · Orbit<br><span style="font-weight:400; color:#8a847a;">evergreen</span></div>
+        </div>
+      </div>
+
+      <!-- 6 · Solo, green -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#5f8c63; box-shadow:0 10px 26px -10px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:60px; height:60px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:134px; height:134px; border-radius:50%; background:#f3f1ec; filter:blur(28px); opacity:.55;"></div>
+            <div style="position:relative; width:60px; height:60px; border-radius:50%; background:#f3f1ec;"></div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#5f8c63; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:18px; height:18px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:40px; height:40px; border-radius:50%; background:#f3f1ec; filter:blur(10px); opacity:.55;"></div>
+              <div style="position:relative; width:18px; height:18px; border-radius:50%; background:#f3f1ec;"></div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">6 · Solo<br><span style="font-weight:400; color:#8a847a;">green</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== APP ICON — THE TICK ===== -->
+  <div style="margin-top:88px;">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;">
+      <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">App icon — the tick</h2>
+      <span style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#c2683f; background:#f7e7dc; padding:6px 10px; border-radius:999px;">Warm only · no evergreen</span>
+    </div>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:660px; margin:12px 0 0;">Bringing the gesture of <strong>ticking a task off</strong> into the mark. Top row evolves the Halo we landed on; bottom row is three fresh starts. All warm — cream, sage, terracotta, amber — nothing from the evergreen family. Each shown large and at home-screen size.</p>
+
+    <!-- ── Evolutions of Halo ── -->
+    <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#a8a193; margin:34px 0 0;">Evolutions of the Halo</div>
+    <div style="display:flex; gap:40px; align-items:flex-start; margin-top:20px; flex-wrap:wrap;">
+
+      <!-- 1 · Haloed tick (sage) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:78px; height:78px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:142px; height:142px; border-radius:50%; background:#5f8c63; filter:blur(26px); opacity:.4;"></div>
+            <div style="position:relative; width:78px; height:78px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;">
+              <svg width="44" height="44" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#f3f1ec" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:44px; height:44px; border-radius:50%; background:#5f8c63; filter:blur(9px); opacity:.4;"></div>
+              <div style="position:relative; width:24px; height:24px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#f3f1ec" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">1 · Haloed tick<br><span style="font-weight:400; color:#8a847a;">sage · closest to today</span></div>
+        </div>
+      </div>
+
+      <!-- 2 · Haloed tick (terracotta) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:78px; height:78px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:142px; height:142px; border-radius:50%; background:#c2683f; filter:blur(26px); opacity:.42;"></div>
+            <div style="position:relative; width:78px; height:78px; border-radius:50%; background:#c2683f; display:flex; align-items:center; justify-content:center;">
+              <svg width="44" height="44" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#fbf3e9" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:absolute; width:44px; height:44px; border-radius:50%; background:#c2683f; filter:blur(9px); opacity:.42;"></div>
+              <div style="position:relative; width:24px; height:24px; border-radius:50%; background:#c2683f; display:flex; align-items:center; justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#fbf3e9" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">2 · Haloed tick<br><span style="font-weight:400; color:#8a847a;">terracotta · warmer</span></div>
+        </div>
+      </div>
+
+      <!-- 3 · Ring closing into a tick -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="position:relative; width:96px; height:96px;">
+            <svg width="96" height="96" viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="50" r="38" stroke="#e3b48d" stroke-width="8" fill="none" opacity="0.55"></circle>
+              <path d="M30 52 L45 67 L74 33" stroke="#c2683f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="50" r="38" stroke="#e3b48d" stroke-width="9" fill="none" opacity="0.55"></circle>
+              <path d="M30 52 L45 67 L74 33" stroke="#c2683f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">3 · Ring + tick<br><span style="font-weight:400; color:#8a847a;">the “o” completed</span></div>
+        </div>
+      </div>
+
+      <!-- 4 · Knockout tick -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="width:92px; height:92px; border-radius:50%; background:#c2683f; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px -6px rgba(160,70,40,.55);">
+            <svg width="48" height="48" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#efeae0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="width:28px; height:28px; border-radius:50%; background:#c2683f; display:flex; align-items:center; justify-content:center;">
+              <svg width="15" height="15" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#efeae0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">4 · Knockout<br><span style="font-weight:400; color:#8a847a;">tick cut from the dot</span></div>
+        </div>
+      </div>
+
+      <!-- 4b · Knockout (sage green) -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <div style="width:92px; height:92px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px -6px rgba(60,90,64,.55);">
+            <svg width="48" height="48" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#efeae0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="width:28px; height:28px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;">
+              <svg width="15" height="15" viewBox="0 0 100 100" fill="none"><path d="M26 53 L43 70 L75 32" stroke="#efeae0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">4b · Knockout<br><span style="font-weight:400; color:#8a847a;">sage green</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── New directions ── -->
+    <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#a8a193; margin:44px 0 0;">New directions</div>
+    <div style="display:flex; gap:40px; align-items:flex-start; margin-top:20px; flex-wrap:wrap;">
+
+      <!-- 5 · The sweep -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#fbf3e9; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <svg width="104" height="104" viewBox="0 0 100 100" fill="none">
+            <path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#c2683f" stroke-width="13" stroke-linecap="round" fill="none"></path>
+          </svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#fbf3e9; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
+              <path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#c2683f" stroke-width="14" stroke-linecap="round" fill="none"></path>
+            </svg>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">5 · The sweep<br><span style="font-weight:400; color:#8a847a;">one gestural stroke</span></div>
+        </div>
+      </div>
+
+      <!-- 6 · Sunrise tick -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#2b2824; box-shadow:0 10px 26px -10px rgba(40,35,28,.45); display:flex; align-items:center; justify-content:center;">
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+            <defs>
+              <linearGradient id="tickSun" x1="20" y1="80" x2="104" y2="30" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#c2683f"></stop>
+                <stop offset="1" stop-color="#e8a45e"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M30 64 L48 82 L104 22" stroke="url(#tickSun)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="104" cy="22" r="9" fill="#e8a45e"></circle>
+          </svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#2b2824; box-shadow:0 3px 8px -3px rgba(40,35,28,.4); display:flex; align-items:center; justify-content:center;">
+            <svg width="34" height="34" viewBox="0 0 120 120" fill="none">
+              <path d="M30 64 L48 82 L104 22" stroke="url(#tickSun)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="104" cy="22" r="10" fill="#e8a45e"></circle>
+            </svg>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">6 · Sunrise tick<br><span style="font-weight:400; color:#8a847a;">arm rises into a sun</span></div>
+        </div>
+      </div>
+
+      <!-- 7 · Dot becoming tick -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+          <svg width="104" height="104" viewBox="0 0 100 100" fill="none">
+            <path d="M50 28 A22 22 0 1 0 50 72" stroke="#e8a45e" stroke-width="13" stroke-linecap="round" fill="none"></path>
+            <path d="M44 52 L56 66 L84 30" stroke="#c2683f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+          </svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
+              <path d="M50 28 A22 22 0 1 0 50 72" stroke="#e8a45e" stroke-width="14" stroke-linecap="round" fill="none"></path>
+              <path d="M44 52 L56 66 L84 30" stroke="#c2683f" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+            </svg>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">7 · Dot → tick<br><span style="font-weight:400; color:#8a847a;">open dot resolves</span></div>
+        </div>
+      </div>
+
+      <!-- 8 · Soft square, confident tick -->
+      <div style="flex:none; width:190px;">
+        <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; box-shadow:0 10px 26px -10px rgba(160,70,40,.5); display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,#e8a45e 0%,#c2683f 92%);">
+          <svg width="92" height="92" viewBox="0 0 100 100" fill="none"><path d="M24 54 L42 72 L78 30" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:16px;">
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; box-shadow:0 3px 8px -3px rgba(160,70,40,.5); display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,#e8a45e 0%,#c2683f 92%);">
+            <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><path d="M24 54 L42 72 L78 30" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="font:700 11.1px/1.3 'Nunito Sans'; color:#2b2824;">8 · Warm square<br><span style="font-weight:400; color:#8a847a;">most “app store”</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SAGE KNOCKOUT — THE MARK ===== -->
+  <div style="margin-top:88px;">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;">
+      <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Sage knockout — the mark</h2>
+      <span style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#5f8c63; background:#eaf0e6; padding:6px 10px; border-radius:999px;">Locked</span>
+    </div>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:660px; margin:12px 0 0;">A sage dot with the tick knocked out as a single playful sweep. Two platform builds: a <strong>standard</strong> dot with breathing room so it survives Android's circular &amp; adaptive-icon masking, and a <strong>full-bleed</strong> fill for iOS's square tile.</p>
+
+    <div style="display:flex; gap:56px; align-items:flex-start; margin-top:32px; flex-wrap:wrap;">
+
+      <!-- Standard · Android / adaptive -->
+      <div style="flex:none;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#2b2824;">Standard <span style="color:#8a847a; font-weight:400;">· Android &amp; adaptive</span></div>
+        <div style="display:flex; gap:18px; align-items:flex-end; margin-top:14px;">
+          <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#efeae0; box-shadow:0 10px 26px -10px rgba(40,35,28,.35), inset 0 0 0 1px rgba(0,0,0,.04); display:flex; align-items:center; justify-content:center;">
+            <div style="width:152px; height:152px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 22px -8px rgba(60,90,64,.5);">
+              <svg width="104" height="104" viewBox="0 0 100 100" fill="none"><path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#efeae0" stroke-width="12" stroke-linecap="round" fill="none"></path></svg>
+            </div>
+          </div>
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#efeae0; box-shadow:0 3px 8px -3px rgba(40,35,28,.35); display:flex; align-items:center; justify-content:center;">
+            <div style="width:42px; height:42px; border-radius:50%; background:#5f8c63; display:flex; align-items:center; justify-content:center;">
+              <svg width="29" height="29" viewBox="0 0 100 100" fill="none"><path d="M22 54 Q34 60 42 70 Q46 75 50 70 Q64 46 82 26" stroke="#efeae0" stroke-width="13" stroke-linecap="round" fill="none"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-bleed · iOS -->
+      <div style="flex:none;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#2b2824;">Full-bleed <span style="color:#8a847a; font-weight:400;">· iOS</span></div>
+        <div style="display:flex; gap:18px; align-items:flex-end; margin-top:14px;">
+          <div style="width:180px; height:180px; border-radius:42px; overflow:hidden; background:#5f8c63; box-shadow:0 10px 26px -10px rgba(60,90,64,.5); display:flex; align-items:center; justify-content:center;">
+            <svg width="118" height="118" viewBox="0 0 100 100" fill="none"><path d="M20 55 Q33 61 41 72 Q46 78 51 71 Q65 45 84 24" stroke="#efeae0" stroke-width="14" stroke-linecap="round" fill="none"></path></svg>
+          </div>
+          <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; background:#5f8c63; box-shadow:0 3px 8px -3px rgba(60,90,64,.5); display:flex; align-items:center; justify-content:center;">
+            <svg width="33" height="33" viewBox="0 0 100 100" fill="none"><path d="M20 55 Q33 61 41 72 Q46 78 51 71 Q65 45 84 24" stroke="#efeae0" stroke-width="15" stroke-linecap="round" fill="none"></path></svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== STREAK PALETTE ALTERNATIVES ===== -->
+  <div style="margin-top:88px;">
+    <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Streak palette — alternatives</h2>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">The stats hero is the one loud moment in a deliberately quiet app. Four readings of it below, all pulled from the existing palette — pick one and I'll apply it to the live screen.</p>
+
+    <div style="display:flex; gap:30px; align-items:flex-start; margin-top:30px; flex-wrap:wrap;">
+
+      <!-- A · Ink & amber (current) -->
+      <div style="flex:none; width:236px;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824;">A · Ink &amp; amber</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin:3px 0 11px;">current · warm contrast</div>
+        <div style="background:#f3f1ec; border-radius:18px; padding:16px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+          <div style="background:#2b2824; border-radius:16px; padding:20px 16px; text-align:center;">
+            <div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#a39c8e;">Current streak</div>
+            <div style="font:500 51.1px/1 'Newsreader'; color:#e8a45e; margin-top:8px;">5</div>
+            <div style="font:500 12.4px/1 'Newsreader'; color:#f3f1ec; margin-top:2px;">days, unbroken</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#5f8c63;">12</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Longest</div></div>
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#2b2824;">128</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Completed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B · Evergreen -->
+      <div style="flex:none; width:236px;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824;">B · Evergreen</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin:3px 0 11px;">brand green · soft gold</div>
+        <div style="background:#f3f1ec; border-radius:18px; padding:16px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+          <div style="background:#2f4233; border-radius:16px; padding:20px 16px; text-align:center;">
+            <div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#93a58f;">Current streak</div>
+            <div style="font:500 51.1px/1 'Newsreader'; color:#e8c98f; margin-top:8px;">5</div>
+            <div style="font:500 12.4px/1 'Newsreader'; color:#eef2e8; margin-top:2px;">days, unbroken</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#3a5240;">12</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Longest</div></div>
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#2b2824;">128</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Completed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C · Terracotta -->
+      <div style="flex:none; width:236px;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824;">C · Terracotta</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin:3px 0 11px;">urgency hue · energetic</div>
+        <div style="background:#f3f1ec; border-radius:18px; padding:16px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+          <div style="background:#c2683f; border-radius:16px; padding:20px 16px; text-align:center;">
+            <div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#f3cdb7;">Current streak</div>
+            <div style="font:500 51.1px/1 'Newsreader'; color:#fbf3e9; margin-top:8px;">5</div>
+            <div style="font:500 12.4px/1 'Newsreader'; color:#fbf3e9; margin-top:2px;">days, unbroken</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#c2683f;">12</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Longest</div></div>
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#2b2824;">128</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Completed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D · Soft light -->
+      <div style="flex:none; width:236px;">
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#2b2824;">D · Soft light</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin:3px 0 11px;">calm · stays in restraint</div>
+        <div style="background:#f3f1ec; border-radius:18px; padding:16px; box-shadow:0 1px 3px rgba(43,40,36,.08);">
+          <div style="background:#fff; border:1.5px solid #e7e2d8; border-radius:16px; padding:20px 16px; text-align:center;">
+            <div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#b3a594;">Current streak</div>
+            <div style="font:500 51.1px/1 'Newsreader'; color:#5f8c63; margin-top:8px;">5</div>
+            <div style="font:500 12.4px/1 'Newsreader'; color:#2b2824; margin-top:2px;">days, unbroken</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#5f8c63;">12</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Longest</div></div>
+            <div style="flex:1; background:#fff; border-radius:13px; padding:13px;"><div style="font:500 25.2px/1 'Newsreader'; color:#2b2824;">128</div><div style="font:600 8.7px/1.3 'Nunito Sans'; color:#a8a193; margin-top:5px;">Completed</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== THREE DIRECTIONS ===== -->
+  <div style="margin-top:88px;">
+    <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Three directions</h2>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">Each is a complete system — colour, type, navigation model, and a different take on the single ambient urgency cue. Same three screens across all three so you can compare like for like. Mix and match.</p>
+
+    <!-- DIRECTION A : CLEARING -->
+    <div style="margin-top:36px; background:#fff; border-radius:4px; box-shadow:0 1px 3px rgba(43,40,36,.08); padding:26px 28px; max-width:1040px;">
+      <div style="display:flex; align-items:flex-start; gap:28px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;"><div style="font:500 25.2px/1 'Newsreader'; color:#1f1d1a; white-space:nowrap;">A · Clearing</div><div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#5f8c63;">soft &amp; airy</div></div>
+          <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:9px 0 0; max-width:360px;">Warm white, a single sage. The card floats; its only cue is a <strong>warming halo</strong> that glows oranger as a task overdues. Chrome-less — manage hides top-left.</p>
+        </div>
+        <div style="flex:none;">
+          <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#a8a193; margin-bottom:8px;">Palette</div>
+          <div style="display:flex; gap:7px;">
+            <div style="width:30px; height:30px; border-radius:8px; background:#f3f1ec; border:1px solid #e2dccf;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#2b2824;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#5f8c63;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#c2683f;"></div>
+          </div>
+          <div style="font:500 19.9px/1 'Newsreader'; color:#2b2824; margin-top:14px;">Newsreader <span style="font-family:'Nunito Sans'; font-weight:700; font-size:12.4px; color:#8a847a;">+ Nunito Sans</span></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:26px; align-items:flex-start; margin-top:24px;">
+        <!-- A onboarding -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">First run</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#f3f1ec; border-radius:30px; overflow:hidden;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:64px 26px 26px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                <div style="margin-top:48px; width:60px; height:60px; border-radius:50%; background:radial-gradient(circle at 50% 42%, #e9eee2, #f3f1ec); display:flex; align-items:center; justify-content:center;"><div style="width:20px; height:20px; border-radius:50% 0 50% 50%; background:#5f8c63; transform:rotate(45deg);"></div></div>
+                <div style="font:500 25.2px/1.25 'Newsreader'; color:#2b2824; margin-top:28px;">One chore<br>at a time.</div>
+                <div style="font:400 14px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:14px; max-width:170px;">No lists, no sorting. We’ll show you what matters. Add your first to begin.</div>
+                <div style="flex:1;"></div>
+                <div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#5f8c63; margin-bottom:10px;">Add your first chore ↓</div>
+              </div>
+              <div style="position:absolute; right:20px; bottom:26px; width:52px; height:52px; border-radius:18px; background:#2b2824; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 22px -8px rgba(43,40,36,.5);"><div style="position:relative; width:16px; height:16px;"><div style="position:absolute; top:7px; left:0; width:16px; height:2.4px; background:#f3f1ec; border-radius:2px;"></div><div style="position:absolute; left:7px; top:0; width:2.4px; height:16px; background:#f3f1ec; border-radius:2px;"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- A daily -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Daily — full-screen, warm wash</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#f3f1ec; border-radius:30px; overflow:hidden;">
+              <div style="position:absolute; bottom:-90px; left:50%; transform:translateX(-50%); width:330px; height:280px; border-radius:50%; filter:blur(54px); background:#c2683f; opacity:.5;"></div>
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:44px 18px 20px; display:flex; flex-direction:column;">
+                <div style="position:relative; z-index:2; display:flex; justify-content:space-between; align-items:center;"><div style="width:34px; height:34px; border-radius:11px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); display:flex; align-items:center; justify-content:center;"><div style="width:13px; height:1.8px; background:#8a847a; border-radius:2px; box-shadow:0 -4px 0 #8a847a, 0 4px 0 #8a847a;"></div></div><div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.2em; text-transform:uppercase; color:#c2bcae;">Today</div><div style="width:34px;"></div></div>
+                <div style="position:relative; z-index:2; flex:1; display:flex; flex-direction:column; justify-content:center; padding:0 10px;">
+                  <div style="font:500 35.9px/1.16 'Newsreader'; letter-spacing:-.015em; color:#2b2824;">Reply to the landlord</div>
+                </div>
+                <div style="position:relative; z-index:2; text-align:center; font:700 8.7px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#cdc7ba;">right · done&nbsp;&nbsp;left · skip</div>
+              </div>
+              <div style="position:absolute; right:20px; bottom:24px; width:50px; height:50px; border-radius:17px; background:#2b2824; display:flex; align-items:center; justify-content:center; box-shadow:0 12px 22px -8px rgba(43,40,36,.5);"><div style="position:relative; width:15px; height:15px;"><div style="position:absolute; top:6.5px; left:0; width:15px; height:2.4px; background:#f3f1ec; border-radius:2px;"></div><div style="position:absolute; left:6.5px; top:0; width:2.4px; height:15px; background:#f3f1ec; border-radius:2px;"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- A target -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Target hit — the reveal</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#f3f1ec; border-radius:30px; overflow:hidden;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:50px 26px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="font:700 8.7px/1 'Nunito Sans'; letter-spacing:.22em; text-transform:uppercase; color:#a89f8f; margin-bottom:18px;">Done for today</div>
+                <div style="font:500 64.7px/1 'Newsreader'; color:#5f8c63;">6</div>
+                <div style="font:500 19.9px/1.3 'Newsreader'; color:#2b2824;">day streak banked</div>
+                <div style="display:flex; gap:6px; margin-top:18px;"><div style="width:8px; height:8px; border-radius:50%; background:#cdb89a;"></div><div style="width:8px; height:8px; border-radius:50%; background:#cdb89a;"></div><div style="width:8px; height:8px; border-radius:50%; background:#cdb89a;"></div><div style="width:8px; height:8px; border-radius:50%; background:#cdb89a;"></div><div style="width:8px; height:8px; border-radius:50%; background:#5f8c63; box-shadow:0 0 0 4px rgba(95,140,99,.18);"></div></div>
+                <div style="font:400 14px/1.5 'Nunito Sans'; color:#8f8a80; margin-top:20px; max-width:160px;">You’ve done enough. See you tomorrow.</div>
+                <div style="margin-top:24px; padding:11px 18px; border:1.5px solid #ddd6c9; border-radius:13px; font:700 12.4px/1 'Nunito Sans'; color:#6f6a60;">Keep going — bonus ↑</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION B : FIELD -->
+    <div style="margin-top:30px; background:#fff; border-radius:4px; box-shadow:0 1px 3px rgba(43,40,36,.08); padding:26px 28px; max-width:1040px;">
+      <div style="display:flex; align-items:flex-start; gap:28px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;"><div style="font:600 25.2px/1 'Source Serif 4'; color:#1f1d1a; white-space:nowrap;">B · Field</div><div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#a4633e;">warm &amp; earthy</div></div>
+          <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:9px 0 0; max-width:360px;">Paper and clay, editorial. The task is set large like a headline. The cue is a <strong>rising tide</strong> of clay from the base — it climbs as the deadline nears. A quiet two-dot footer is the only nav.</p>
+        </div>
+        <div style="flex:none;">
+          <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#a8a193; margin-bottom:8px;">Palette</div>
+          <div style="display:flex; gap:7px;">
+            <div style="width:30px; height:30px; border-radius:8px; background:#f2ebdc; border:1px solid #dcd0ba;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#34291d;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#a4633e;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#c89a5b;"></div>
+          </div>
+          <div style="font:600 19.9px/1 'Source Serif 4'; color:#2b2824; margin-top:14px;">Source Serif <span style="font-family:'Work Sans'; font-weight:600; font-size:12.4px; color:#8a847a;">+ Work Sans</span></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:26px; align-items:flex-start; margin-top:24px;">
+        <!-- B onboarding -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">First run</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#e8e0d0; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:60px 28px 26px; display:flex; flex-direction:column;">
+                <div style="margin-top:40px; font:600 11.1px/1 'Work Sans'; letter-spacing:.18em; text-transform:uppercase; color:#a4633e;">Field</div>
+                <div style="font:600 31.9px/1.18 'Source Serif 4'; color:#34291d; margin-top:16px;">Do one thing.<br>Then rest.</div>
+                <div style="font:400 14px/1.55 'Work Sans'; color:#8a7c66; margin-top:14px; max-width:180px;">We surface what’s due. You just say yes or not yet.</div>
+                <div style="flex:1;"></div>
+                <div style="padding:15px; border-radius:15px; background:#34291d; text-align:center; font:600 14px/1 'Work Sans'; color:#f2ebdc;">Add your first chore</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- B daily : tide -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Daily — rising tide cue</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#f2ebdc; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; bottom:0; left:0; right:0; height:46%; background:linear-gradient(180deg, #c07c4e, #a4633e);"></div>
+              <div style="position:absolute; bottom:46%; left:0; right:0; height:1px; background:rgba(52,41,29,.18);"></div>
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:48px 26px 26px; display:flex; flex-direction:column;">
+                <div style="font:600 9.8px/1 'Work Sans'; letter-spacing:.2em; text-transform:uppercase; color:#b3a07f;">Today</div>
+                <div style="font:600 35.9px/1.16 'Source Serif 4'; color:#34291d; margin-top:18px; max-width:175px;">Reply to the landlord</div>
+                <div style="flex:1;"></div>
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="font:600 11.1px/1 'Work Sans'; letter-spacing:.1em; text-transform:uppercase; color:#f2ebdc; opacity:.85;">Swipe to act</div>
+                  <div style="display:flex; gap:7px;"><div style="width:7px; height:7px; border-radius:50%; background:#34291d;"></div><div style="width:7px; height:7px; border-radius:50%; background:rgba(52,41,29,.3);"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- B target -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Target hit — the reveal</div>
+          <div style="position:relative; width:244px; height:512px; background:#1b1916; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.4);">
+            <div style="position:relative; width:226px; height:494px; background:#34291d; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#1b1916; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:50px 28px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="font:600 8.7px/1 'Work Sans'; letter-spacing:.22em; text-transform:uppercase; color:#c89a5b; margin-bottom:18px;">Done for today</div>
+                <div style="font:600 72.8px/1 'Source Serif 4'; color:#e8a45e;">6</div>
+                <div style="font:600 17.7px/1.3 'Source Serif 4'; color:#f2ebdc;">days, unbroken</div>
+                <div style="font:400 12.4px/1.5 'Work Sans'; color:#b3a07f; margin-top:18px; max-width:160px;">Banked. The chain holds. Rest easy tonight.</div>
+                <div style="margin-top:24px; padding:11px 18px; border:1.5px solid rgba(242,235,220,.25); border-radius:13px; font:600 12.4px/1 'Work Sans'; color:#e8ddc8;">Keep going — bonus ↑</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION C : LANTERN -->
+    <div style="margin-top:30px; background:#fff; border-radius:4px; box-shadow:0 1px 3px rgba(43,40,36,.08); padding:26px 28px; max-width:1040px;">
+      <div style="display:flex; align-items:flex-start; gap:28px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:240px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;"><div style="font:600 25.2px/1 'Space Grotesk'; color:#1f1d1a; white-space:nowrap;">C · Lantern</div><div style="font:700 11.1px/1 'Nunito Sans'; letter-spacing:.04em; color:#b8862f;">dark &amp; focused</div></div>
+          <p style="font:400 14px/1.55 'Nunito Sans'; color:#5c574e; margin:9px 0 0; max-width:360px;">Near-black, one amber. At night the daily card is the only lit thing in the room. The cue is <strong>glow intensity</strong> — the halo behind the card brightens with pressure. Pure gesture; no visible chrome at all.</p>
+        </div>
+        <div style="flex:none;">
+          <div style="font:700 9.8px/1 'Nunito Sans'; letter-spacing:.14em; text-transform:uppercase; color:#a8a193; margin-bottom:8px;">Palette</div>
+          <div style="display:flex; gap:7px;">
+            <div style="width:30px; height:30px; border-radius:8px; background:#15130f;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#211d16;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#d9a23f;"></div>
+            <div style="width:30px; height:30px; border-radius:8px; background:#ece7dc; border:1px solid #e2dccf;"></div>
+          </div>
+          <div style="font:600 19.9px/1 'Space Grotesk'; color:#2b2824; margin-top:14px;">Space Grotesk <span style="font-family:'Work Sans'; font-weight:600; font-size:12.4px; color:#8a847a;">+ Work Sans</span></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:26px; align-items:flex-start; margin-top:24px;">
+        <!-- C onboarding -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">First run</div>
+          <div style="position:relative; width:244px; height:512px; background:#0c0b09; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.5);">
+            <div style="position:relative; width:226px; height:494px; background:#15130f; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#0c0b09; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:64px 28px 28px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+                <div style="margin-top:46px; width:56px; height:56px; border-radius:50%; background:radial-gradient(circle, rgba(217,162,63,.5), rgba(217,162,63,0) 70%); display:flex; align-items:center; justify-content:center;"><div style="width:14px; height:14px; border-radius:50%; background:#d9a23f; box-shadow:0 0 16px 2px rgba(217,162,63,.7);"></div></div>
+                <div style="font:600 28.4px/1.2 'Space Grotesk'; color:#ece7dc; margin-top:28px;">One light at<br>a time.</div>
+                <div style="font:400 14px/1.55 'Work Sans'; color:#8f897c; margin-top:14px; max-width:170px;">We hand you one chore each day. Do it, or pass. Nothing else.</div>
+                <div style="flex:1;"></div>
+                <div style="padding:15px; width:100%; border-radius:15px; background:#d9a23f; text-align:center; font:600 14px/1 'Work Sans'; color:#1a1407;">Add your first chore</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- C daily : glow -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Daily — glow cue</div>
+          <div style="position:relative; width:244px; height:512px; background:#0c0b09; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.5);">
+            <div style="position:relative; width:226px; height:494px; background:#15130f; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#0c0b09; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                <div style="position:absolute; width:300px; height:300px; border-radius:50%; filter:blur(50px); background:#d9a23f; opacity:.4;"></div>
+                <div style="position:relative; z-index:2; width:198px; min-height:300px; background:#211d16; border:1px solid #322b1f; border-radius:26px; box-shadow:0 0 50px -6px rgba(217,162,63,.35); padding:30px 26px; display:flex; align-items:center;"><div style="font:500 22.4px/1.28 'Space Grotesk'; color:#ece7dc;">Reply to the landlord</div></div>
+              </div>
+              <div style="position:absolute; bottom:22px; left:0; right:0; text-align:center; font:600 8.7px/1 'Work Sans'; letter-spacing:.18em; text-transform:uppercase; color:#5a5448;">right · done&nbsp;&nbsp;left · skip</div>
+            </div>
+          </div>
+        </div>
+        <!-- C target -->
+        <div style="flex:none;">
+          <div style="font:600 11.1px/1 'Nunito Sans'; color:#8a847a; margin-bottom:9px;">Target hit — the reveal</div>
+          <div style="position:relative; width:244px; height:512px; background:#0c0b09; border-radius:38px; padding:9px; box-shadow:0 18px 40px -18px rgba(40,35,28,.5);">
+            <div style="position:relative; width:226px; height:494px; background:#15130f; border-radius:30px; overflow:hidden; font-family:'Work Sans',sans-serif;">
+              <div style="position:absolute; top:9px; left:50%; transform:translateX(-50%); width:78px; height:21px; background:#0c0b09; border-radius:11px; z-index:5;"></div>
+              <div style="position:absolute; inset:0; padding:50px 28px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                <div style="position:absolute; top:38%; width:200px; height:200px; border-radius:50%; filter:blur(46px); background:#d9a23f; opacity:.28;"></div>
+                <div style="position:relative; font:600 8.7px/1 'Work Sans'; letter-spacing:.22em; text-transform:uppercase; color:#8f897c; margin-bottom:18px;">Done for today</div>
+                <div style="position:relative; font:600 72.8px/1 'Space Grotesk'; color:#d9a23f; text-shadow:0 0 30px rgba(217,162,63,.5);">6</div>
+                <div style="position:relative; font:500 17.7px/1.3 'Space Grotesk'; color:#ece7dc;">day streak banked</div>
+                <div style="position:relative; font:400 12.4px/1.5 'Work Sans'; color:#8f897c; margin-top:18px; max-width:160px;">Enough for today. The light stays on for tomorrow.</div>
+                <div style="position:relative; margin-top:24px; padding:11px 18px; border:1.5px solid #322b1f; border-radius:13px; font:600 12.4px/1 'Work Sans'; color:#cfc7b6;">Keep going — bonus ↑</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== URGENCY SCALE ===== -->
+  <div style="margin-top:88px;">
+    <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">The one cue, dialled up</h2>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">Direction A's halo is the whole urgency language — no badges, no “overdue” labels. It stays cool and faint at baseline and warms toward orange as time pressure rises. Time pressure is the <em>only</em> lever; a task with no deadline simply sits at baseline and surfaces on a random draw.</p>
+
+    <div style="display:flex; gap:30px; align-items:flex-start; margin-top:28px;">
+      <div style="flex:none; text-align:center;">
+        <div style="position:relative; width:188px; height:236px; background:#f3f1ec; border-radius:24px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px #e7e2d8;">
+          <div style="position:absolute; width:150px; height:150px; border-radius:50%; filter:blur(34px); background:#5f8c63; opacity:.12;"></div>
+          <div style="position:relative; z-index:2; width:130px; height:150px; background:#fff; border-radius:18px; box-shadow:0 10px 24px -14px rgba(43,40,36,.4); padding:18px; display:flex; align-items:center;"><div style="font:500 15.8px/1.25 'Newsreader'; color:#2b2824;">Descale the kettle</div></div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#5f8c63; margin-top:11px;">Baseline</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin-top:3px;">no deadline · random</div>
+      </div>
+      <div style="flex:none; text-align:center;">
+        <div style="position:relative; width:188px; height:236px; background:#f3f1ec; border-radius:24px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px #e7e2d8;">
+          <div style="position:absolute; width:160px; height:160px; border-radius:50%; filter:blur(36px); background:#8a9a55; opacity:.28;"></div>
+          <div style="position:relative; z-index:2; width:130px; height:150px; background:#fff; border-radius:18px; box-shadow:0 10px 24px -14px rgba(43,40,36,.4); padding:18px; display:flex; align-items:center;"><div style="font:500 15.8px/1.25 'Newsreader'; color:#2b2824;">Change the bedsheets</div></div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#8a9a55; margin-top:11px;">Approaching</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin-top:3px;">cadence nearing</div>
+      </div>
+      <div style="flex:none; text-align:center;">
+        <div style="position:relative; width:188px; height:236px; background:#f3f1ec; border-radius:24px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px #e7e2d8;">
+          <div style="position:absolute; width:175px; height:175px; border-radius:50%; filter:blur(38px); background:#c98a4a; opacity:.42;"></div>
+          <div style="position:relative; z-index:2; width:130px; height:150px; background:#fff; border-radius:18px; box-shadow:0 10px 24px -14px rgba(43,40,36,.4); padding:18px; display:flex; align-items:center;"><div style="font:500 15.8px/1.25 'Newsreader'; color:#2b2824;">Take out the recycling</div></div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#c98a4a; margin-top:11px;">Due today</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin-top:3px;">deadline is now</div>
+      </div>
+      <div style="flex:none; text-align:center;">
+        <div style="position:relative; width:188px; height:236px; background:#f3f1ec; border-radius:24px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 1px #e7e2d8;">
+          <div style="position:absolute; width:200px; height:200px; border-radius:50%; filter:blur(40px); background:#c2683f; opacity:.62;"></div>
+          <div style="position:relative; z-index:2; width:130px; height:150px; background:#fff; border-radius:18px; box-shadow:0 10px 24px -14px rgba(43,40,36,.4); padding:18px; display:flex; align-items:center;"><div style="font:500 15.8px/1.25 'Newsreader'; color:#2b2824;">Reply to the landlord</div></div>
+        </div>
+        <div style="font:700 11.1px/1 'Nunito Sans'; color:#c2683f; margin-top:11px;">Overdue</div>
+        <div style="font:400 11.1px/1.4 'Nunito Sans'; color:#a8a193; margin-top:3px;">past due · warmest</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFICATIONS + AUTH ===== -->
+  <div style="margin-top:88px;">
+    <h2 style="font:500 28.4px/1 'Newsreader'; letter-spacing:-.01em; margin:0; color:#1f1d1a;">Notifications &amp; sign-in</h2>
+    <p style="font:400 15.8px/1.6 'Nunito Sans'; color:#5c574e; max-width:640px; margin:12px 0 0;">Pushes nudge you over the floor (your first task), never chase the target. Each fires <em>only if</em> the streak isn't secured; doing one suppresses the rest. Content is opaque — it carries streak status, not the task name — so opening the app is still a reveal. The final beat is the only one that states the real stakes, calmly.</p>
+
+    <div style="display:flex; gap:48px; align-items:flex-start; margin-top:28px; flex-wrap:wrap;">
+      <!-- lockscreen -->
+      <div style="flex:none;">
+        <div style="font:600 12.4px/1 'Nunito Sans'; color:#8a847a; margin-bottom:12px;">Lock screen — escalating, opaque, conditional</div>
+        <div style="position:relative; width:300px; height:600px; background:#0c0b09; border-radius:42px; padding:10px; box-shadow:0 24px 56px -20px rgba(40,35,28,.5);">
+          <div style="position:relative; width:280px; height:580px; border-radius:33px; overflow:hidden; background:linear-gradient(170deg, #2e3a2f, #1c2620 60%, #14110d);">
+            <div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:88px; height:24px; background:#0c0b09; border-radius:13px; z-index:5;"></div>
+            <div style="padding:60px 18px 0; text-align:center;">
+              <div style="font:300 12.4px/1 'Nunito Sans'; color:rgba(255,255,255,.7); letter-spacing:.04em;">Tuesday, 21 June</div>
+              <div style="font:200 64.7px/1 'Nunito Sans'; color:#fff; margin-top:4px; letter-spacing:.01em;">21:34</div>
+            </div>
+            <div style="position:absolute; left:14px; right:14px; bottom:26px; display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(247,244,238,.16); backdrop-filter:blur(8px); border-radius:18px; padding:13px 14px; display:flex; gap:11px; align-items:flex-start;">
+                <div style="width:32px; height:32px; border-radius:9px; background:#5f8c63; flex:none; display:flex; align-items:center; justify-content:center;"><div style="width:11px; height:11px; border-radius:50% 0 50% 50%; background:#fff; transform:rotate(45deg);"></div></div>
+                <div style="flex:1;"><div style="display:flex; justify-content:space-between;"><div style="font:700 12.4px/1 'Nunito Sans'; color:#fff;">Clearing</div><div style="font:400 11.1px/1 'Nunito Sans'; color:rgba(255,255,255,.5);">8:30</div></div><div style="font:400 12.4px/1.4 'Nunito Sans'; color:rgba(255,255,255,.92); margin-top:4px;">Morning. One small thing keeps your 5-day streak going.</div></div>
+              </div>
+              <div style="background:rgba(247,244,238,.16); backdrop-filter:blur(8px); border-radius:18px; padding:13px 14px; display:flex; gap:11px; align-items:flex-start;">
+                <div style="width:32px; height:32px; border-radius:9px; background:#5f8c63; flex:none; display:flex; align-items:center; justify-content:center;"><div style="width:11px; height:11px; border-radius:50% 0 50% 50%; background:#fff; transform:rotate(45deg);"></div></div>
+                <div style="flex:1;"><div style="display:flex; justify-content:space-between;"><div style="font:700 12.4px/1 'Nunito Sans'; color:#fff;">Clearing</div><div style="font:400 11.1px/1 'Nunito Sans'; color:rgba(255,255,255,.5);">18:00</div></div><div style="font:400 12.4px/1.4 'Nunito Sans'; color:rgba(255,255,255,.92); margin-top:4px;">Still here whenever you are. The streak’s yours to keep.</div></div>
+              </div>
+              <div style="background:rgba(194,104,63,.30); backdrop-filter:blur(8px); border-radius:18px; padding:13px 14px; display:flex; gap:11px; align-items:flex-start; box-shadow:inset 0 0 0 1px rgba(194,104,63,.4);">
+                <div style="width:32px; height:32px; border-radius:9px; background:#c2683f; flex:none; display:flex; align-items:center; justify-content:center;"><div style="width:11px; height:11px; border-radius:50% 0 50% 50%; background:#fff; transform:rotate(45deg);"></div></div>
+                <div style="flex:1;"><div style="display:flex; justify-content:space-between;"><div style="font:700 12.4px/1 'Nunito Sans'; color:#fff;">Clearing</div><div style="font:400 11.1px/1 'Nunito Sans'; color:rgba(255,255,255,.6);">21:30</div></div><div style="font:400 12.4px/1.4 'Nunito Sans'; color:#fff; margin-top:4px;">Your 5-day streak ends if today stays empty. One task is all it takes.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="max-width:300px; font:400 12.4px/1.5 'Nunito Sans'; color:#8a847a; margin-top:14px;">Reminders 1–2 are near-identical and gentle. The final beat warms and states the stakes — never guilt, all-caps, or an alarm. None names the task.</div>
+      </div>
+
+      <!-- auth -->
+      <div style="flex:none;">
+        <div style="font:600 12.4px/1 'Nunito Sans'; color:#8a847a; margin-bottom:12px;">Sign in — Firebase Auth, sync from day one</div>
+        <div style="position:relative; width:300px; height:600px; background:#1b1916; border-radius:42px; padding:10px; box-shadow:0 24px 56px -20px rgba(40,35,28,.5);">
+          <div style="position:relative; width:280px; height:580px; background:#f3f1ec; border-radius:33px; overflow:hidden;">
+            <div style="position:absolute; top:10px; left:50%; transform:translateX(-50%); width:88px; height:24px; background:#1b1916; border-radius:13px; z-index:5;"></div>
+            <div style="position:absolute; inset:0; padding:0 30px; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+              <div style="margin:0 auto; width:64px; height:64px; border-radius:50%; background:radial-gradient(circle at 50% 42%, #e9eee2, #f3f1ec); display:flex; align-items:center; justify-content:center;"><div style="width:22px; height:22px; border-radius:50% 0 50% 50%; background:#5f8c63; transform:rotate(45deg);"></div></div>
+              <div style="font:500 35.9px/1 'Newsreader'; color:#1f1d1a; margin-top:24px;">Clearing</div>
+              <div style="font:400 14px/1.55 'Nunito Sans'; color:#8f8a80; margin-top:12px;">One chore a day. Backed up, on every device.</div>
+              <div style="margin-top:38px; display:flex; flex-direction:column; gap:11px;">
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:15px; border-radius:15px; background:#fff; box-shadow:0 1px 3px rgba(43,40,36,.1); font:700 14px/1 'Nunito Sans'; color:#2b2824;"><div style="width:17px; height:17px; border-radius:50%; background:conic-gradient(#4285f4 0 25%, #ea4335 0 50%, #fbbc05 0 75%, #34a853 0 100%);"></div>Continue with Google</div>
+                <div style="padding:15px; border-radius:15px; background:#2b2824; font:700 14px/1 'Nunito Sans'; color:#f3f1ec;">Continue with Apple</div>
+                <div style="padding:15px; border-radius:15px; border:1.5px solid #ddd6c9; font:700 14px/1 'Nunito Sans'; color:#6f6a60;">Use email instead</div>
+              </div>
+              <div style="font:400 11.1px/1.5 'Nunito Sans'; color:#b8b1a3; margin-top:26px;">Your pool, streak &amp; history sync and back up automatically — lose your phone, lose nothing.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:680px; margin-top:88px; border-top:1px solid #d6d2c8; padding-top:26px;">
+    <div style="font:700 12.4px/1 'Nunito Sans'; letter-spacing:.16em; text-transform:uppercase; color:#a39c8e;">Next steps</div>
+    <p style="font:400 15.8px/1.65 'Nunito Sans'; color:#5c574e; margin:14px 0 0;">Tell me which <strong>direction</strong> to take forward — or a hybrid (e.g. Clearing's calm with Lantern's night mode). Then I'd refine the chosen one to full fidelity across every state, and we can spec the swipe-animation timings and the enrichment-sheet field set for handoff. Engine mechanics (weighting curve, reroll count, grace) stay deferred per your doc.</p>
+  </div>
+
+  <!-- MORE -->
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;holdMs&quot;: {&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1100,&quot;min&quot;:600,&quot;max&quot;:2500,&quot;step&quot;:100,&quot;tsType&quot;:&quot;number&quot;},
+  &quot;target&quot;: {&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:6,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;}
+}">
+class Component extends DCLogic {
+  componentDidMount(){ if(this.props.target!=null) this.setState({target:this.props.target}); }
+  componentDidUpdate(prev){ if(prev.target!==this.props.target && this.props.target!=null) this.setState({target:this.props.target}); }
+  bumpTarget(d){ this.setState(s=>({target:Math.max(1,Math.min(6,(s.target||3)+d))})); }
+  state = {
+    screen: 'welcome',
+    onboardDraft: '',
+    onboardList: [],
+    holding: false,
+    streak: 5,
+    target: 3,
+    targetMetDays: 27,
+    bankedToday: false,
+    targetDismissed: false,
+    doneToday: 0,
+    lifetimeDone: 128,
+    bestStreak: 12,
+    rerolls: 3,
+    toast: null,
+    draft: '',
+    editReturn: 'daily',
+    enrichDead: 'none',
+    enrichRec: 'none',
+    customN: 2,
+    customUnit: 'weeks',
+    tasks: [
+      {id:1,title:'Reply to the landlord',urg:0.94,meta:'2 days overdue',kind:'one-off',status:'active'},
+      {id:2,title:'Book a dentist appointment',urg:0.76,meta:'due tomorrow',kind:'one-off',status:'active'},
+      {id:3,title:'Take out the recycling',urg:0.58,meta:'due today',kind:'recurring',rec:'every 3 days',status:'active'},
+      {id:4,title:'Change the bedsheets',urg:0.34,meta:'every 2 weeks',kind:'recurring',rec:'every 14 days',status:'active'},
+      {id:5,title:'Water the plants',urg:0.18,meta:'every 7 days',kind:'recurring',rec:'every 7 days',status:'active'},
+      {id:6,title:'Wipe the kitchen counters',urg:0.10,meta:'no deadline',kind:'one-off',status:'active'},
+      {id:7,title:'Descale the kettle',urg:0.05,meta:'no deadline',kind:'one-off',status:'active'},
+    ],
+  };
+
+  cardRef = React.createRef();
+  doneHintRef = React.createRef();
+  skipHintRef = React.createRef();
+  dragOverlayRef = React.createRef();
+  dx = 0; dragging = false; startX = 0; longTimer = null; holdHintTimer = null; longFired = false; toastTimer = null; nextId = 8;
+
+  mix(u){
+    const a=[95,140,99], b=[196,104,63];
+    const r=a.map((v,i)=>Math.round(v+(b[i]-v)*u));
+    return 'rgb('+r[0]+','+r[1]+','+r[2]+')';
+  }
+  served(){
+    const act=this.state.tasks.filter(t=>t.status==='active');
+    if(!act.length) return null;
+    return act.slice().sort((a,b)=>b.urg-a.urg)[0];
+  }
+  toastMsg(m){
+    clearTimeout(this.toastTimer);
+    this.setState({toast:m});
+    this.toastTimer=setTimeout(()=>this.setState({toast:null}),2000);
+  }
+  resetHints(){
+    if(this.doneHintRef.current) this.doneHintRef.current.style.opacity='0';
+    if(this.skipHintRef.current) this.skipHintRef.current.style.opacity='0';
+    if(this.dragOverlayRef.current) this.dragOverlayRef.current.style.opacity='0';
+  }
+  cancelHold(){
+    clearTimeout(this.longTimer); clearTimeout(this.holdHintTimer);
+    if(this.state.holding) this.setState({holding:false});
+  }
+
+  onCardDown=(e)=>{
+    this.dragging=true; this.startX=e.clientX; this.dx=0; this.longFired=false;
+    const c=this.cardRef.current; if(c){c.style.transition='none'; c.style.cursor='grabbing'; try{c.setPointerCapture(e.pointerId);}catch(_){}}
+    clearTimeout(this.longTimer); clearTimeout(this.holdHintTimer);
+    const holdMs=this.props.holdMs ?? 1100;
+    this.holdHintTimer=setTimeout(()=>{ if(this.dragging && Math.abs(this.dx)<10) this.setState({holding:true}); },170);
+    this.longTimer=setTimeout(()=>{ if(this.dragging && Math.abs(this.dx)<10){ this.longFired=true; this.cancelHold(); this.flingRemove(); } },holdMs);
+  };
+  onCardMove=(e)=>{
+    if(!this.dragging) return;
+    this.dx=e.clientX-this.startX;
+    if(Math.abs(this.dx)>10){ this.cancelHold(); }
+    const c=this.cardRef.current;
+    if(c) c.style.transform='translateX('+this.dx+'px) rotate('+(this.dx*0.018)+'deg)';
+    const t=Math.max(0,Math.min(1,Math.abs(this.dx)/110));
+    if(this.doneHintRef.current) this.doneHintRef.current.style.opacity=this.dx>0?t:0;
+    if(this.skipHintRef.current) this.skipHintRef.current.style.opacity=this.dx<0?t:0;
+    const o=this.dragOverlayRef.current;
+    if(o){ o.style.background=this.dx>=0?'#5f8c63':'#6f8099'; o.style.opacity=(t*0.72); }
+  };
+  onCardUp=(e)=>{
+    if(!this.dragging) return;
+    this.dragging=false;
+    this.cancelHold();
+    const c=this.cardRef.current; if(c) c.style.cursor='grab';
+    if(this.longFired){ this.longFired=false; return; }
+    if(this.dx>92){ this.flingResolve('done'); }
+    else if(this.dx<-92){
+      if(this.state.rerolls<=0){ this.springBack(); this.toastMsg("You’re out of skips until tomorrow"); }
+      else { this.flingResolve('skip'); }
+    } else { this.springBack(); }
+  };
+  springBack(){
+    const c=this.cardRef.current;
+    if(c){ c.style.transition='transform .28s cubic-bezier(.2,.8,.3,1)'; c.style.transform=''; }
+    this.resetHints();
+  }
+  flingResolve(dir){
+    const c=this.cardRef.current;
+    if(c){ c.style.transition='transform .24s ease, opacity .24s ease'; c.style.transform='translateX('+(dir==='done'?460:-460)+'px) rotate('+(dir==='done'?10:-10)+'deg)'; c.style.opacity='0'; }
+    setTimeout(()=>{
+      if(dir==='done') this.doDone(); else this.doSkip();
+      const cc=this.cardRef.current; if(cc){ cc.style.transition='none'; cc.style.transform=''; cc.style.opacity='1'; }
+      this.resetHints();
+    },240);
+  }
+  flingRemove(){
+    const c=this.cardRef.current;
+    if(c){ c.style.transition='transform .22s ease, opacity .22s ease'; c.style.transform='translateY(40px) scale(.9)'; c.style.opacity='0'; }
+    setTimeout(()=>{
+      this.doRemove();
+      const cc=this.cardRef.current; if(cc){ cc.style.transition='none'; cc.style.transform=''; cc.style.opacity='1'; }
+      this.resetHints();
+    },220);
+  }
+
+  doDone(){
+    const t=this.served(); if(!t) return;
+    const willBank=!this.state.bankedToday;
+    this.setState(s=>{
+      const done=s.doneToday+1;
+      const target=s.target;
+      const tasks=s.tasks.map(x=>{
+        if(x.id!==t.id) return x;
+        if(x.kind==='one-off') return {...x,status:'archived'};
+        return {...x,urg:0.03,meta:'done today',status:'active'};
+      });
+      let screen='daily';
+      let streak=s.streak, bestStreak=s.bestStreak, bankedToday=s.bankedToday, targetMetDays=s.targetMetDays;
+      // Showing up — the first task of the day banks the daily streak
+      if(!bankedToday){ streak=s.streak+1; bestStreak=Math.max(s.bestStreak,streak); bankedToday=true; }
+      // Reaching the daily target is the celebrated moment
+      // Celebrate only the FIRST time the target is met today; after Keep Going, stay on the daily/cleared flow
+      if(done>=target){
+        if(done===target) targetMetDays=s.targetMetDays+1;
+        if(!s.targetDismissed) screen='targetHit';
+        else if(!tasks.some(x=>x.status==='active'&&x.urg>0.04)) screen='cleared';
+      }
+      else if(!tasks.some(x=>x.status==='active'&&x.urg>0.04)) screen='cleared';
+      return {tasks,doneToday:done,streak,bestStreak,bankedToday,targetMetDays,lifetimeDone:s.lifetimeDone+1,screen};
+    });
+    if(willBank) this.toastMsg("Day streak secured for today");
+  }
+  doSkip(){
+    const t=this.served(); if(!t) return;
+    const willBe=this.state.rerolls-1;
+    this.setState(s=>{
+      const tasks=s.tasks.map(x=>x.id===t.id?{...x,status:'benched'}:x);
+      let screen='daily';
+      if(!tasks.some(x=>x.status==='active'&&x.urg>0.04)) screen='cleared';
+      return {tasks,rerolls:s.rerolls-1,screen};
+    });
+    if(willBe===0) this.toastMsg("That was your last skip for today");
+  }
+  doRemove(){
+    const t=this.served(); if(!t) return;
+    this.setState(s=>{
+      const tasks=s.tasks.map(x=>x.id===t.id?{...x,status:'removed'}:x);
+      let screen='daily';
+      if(!tasks.some(x=>x.status==='active'&&x.urg>0.04)) screen='cleared';
+      return {tasks,screen};
+    });
+    this.toastMsg("Removed from your pool");
+  }
+
+  onFab=()=>this.setState({screen:'add',draft:'',editReturn:'daily',editId:null});
+  onManage=()=>this.setState({screen:'manage'});
+  onSettings=()=>this.setState({screen:'settings'});
+  onStats=()=>this.setState({screen:'stats'});
+  onBackDaily=()=>this.setState({screen:'daily'});
+  // Onboarding
+  onStartOnboard=()=>this.setState({screen:'onboardTarget'});
+  onboardToAdd=()=>this.setState({screen:'onboardAdd'});
+  onboardBackWelcome=()=>this.setState({screen:'welcome'});
+  onboardBackTarget=()=>this.setState({screen:'onboardTarget'});
+  onOnboardDraft=(e)=>this.setState({onboardDraft:e.target.value});
+  onOnboardAddItem=()=>{
+    const t=(this.state.onboardDraft||'').trim(); if(!t) return;
+    this.setState(s=> s.onboardList.includes(t) ? {onboardDraft:''} : {onboardList:[...s.onboardList,t],onboardDraft:''});
+  };
+  onOnboardToggle=(title)=>this.setState(s=>({onboardList:s.onboardList.includes(title)?s.onboardList.filter(x=>x!==title):[...s.onboardList,title]}));
+  onOnboardRemove=(idx)=>this.setState(s=>({onboardList:s.onboardList.filter((_,i)=>i!==idx)}));
+  onFinishOnboard=()=>{
+    const list=this.state.onboardList;
+    const newTasks=list.map((title,i)=>({id:this.nextId++,title,urg:0.55-i*0.04,meta:'no deadline',kind:'one-off',status:'active'}));
+    this.setState(s=>({tasks:[...newTasks,...s.tasks],screen:'daily',bankedToday:false,targetDismissed:false}));
+  };
+  onKeepGoing=()=>{ this.setState({screen:'daily',targetDismissed:true}); this.toastMsg("Bonus round — your streak is safe"); };
+  onDraft=(e)=>this.setState({draft:e.target.value});
+  onAddCreate=()=>{
+    const title=(this.state.draft||'').trim()||'New chore';
+    const id=this.nextId++;
+    this.setState(s=>({tasks:[...s.tasks,{id,title,urg:0.5,meta:'no deadline',kind:'one-off',status:'active'}],draft:title,editId:id,enrichDead:'none',enrichRec:'none',screen:'enrich'}));
+  };
+  onEnrichSave=()=>this.setState(s=>({screen:s.editReturn||'daily'}));
+  editTask(id){
+    const t=this.state.tasks.find(x=>x.id===id);
+    this.setState({screen:'enrich',editId:id,draft:t?t.title:'',editReturn:'manage',enrichDead:'none',enrichRec:t&&t.kind==='recurring'?(t.rec||'none'):'none'});
+  }
+  deleteFromManage(id,title){
+    this.setState({pendingDelete:{id,title}});
+  }
+  onCancelDelete=()=>this.setState({pendingDelete:null});
+  onConfirmDelete=()=>{
+    const pd=this.state.pendingDelete; if(!pd) return;
+    this.setState(s=>({tasks:s.tasks.map(x=>x.id===pd.id?{...x,status:'removed'}:x),pendingDelete:null}));
+    this.toastMsg('Deleted “'+pd.title+'”');
+  };
+  setDead(v){ this.setState({enrichDead:v}); }
+  setRec(v){ this.setState({enrichRec:v}); }
+  bumpCustom(d){ this.setState(s=>({customN:Math.max(1,Math.min(99,(s.customN||2)+d))})); }
+  setCustomUnit(u){ this.setState({customUnit:u}); }
+
+  chipStyle(sel){
+    return sel
+      ? {padding:'10px 14px',borderRadius:'12px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'#2b2824',color:'#f3f1ec',border:'1.5px solid #2b2824'}
+      : {padding:'10px 14px',borderRadius:'12px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'#fff',color:'#6f6a60',border:'1.5px solid #e7e2d8'};
+  }
+  // Distinct treatment for chips that open a further picker (Pick a date / Custom)
+  chipStyleSpecial(sel){
+    return sel
+      ? {display:'flex',alignItems:'center',gap:'6px',padding:'10px 14px',borderRadius:'12px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'#5f8c63',color:'#fbf9f4',border:'1.5px dashed #4d7551'}
+      : {display:'flex',alignItems:'center',gap:'6px',padding:'10px 14px',borderRadius:'12px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'#f3f6f1',color:'#5f8c63',border:'1.5px dashed #b7cdb4'};
+  }
+
+  renderVals(){
+    const t=this.served();
+    const u=t?t.urg:0;
+    const sz=340+u*160;
+    const haloStyle={position:'absolute',left:'50%',bottom:'-130px',transform:'translateX(-50%)',width:sz+'px',height:(sz*0.86)+'px',borderRadius:'50%',filter:'blur(62px)',background:this.mix(u),opacity:0.12+u*0.5,transition:'all .55s ease',zIndex:1};
+
+    const holdMs=this.props.holdMs ?? 1100;
+    const fillDur=Math.max(0.2,(holdMs-170)/1000);
+    const holdDiscStyle={position:'absolute',inset:'5px',borderRadius:'50%',background:'#c2683f',transform:'scale(0)',transformOrigin:'center',animation:'fillscale '+fillDur+'s linear forwards'};
+    const holdWashStyle={position:'absolute',inset:0,background:'#c2683f',opacity:0,animation:'holdwash '+fillDur+'s ease-in forwards'};
+
+    const dotColor=(x)=>x.urg>0.7?'#c2683f':(x.urg>0.4?'#cdb16a':'#a9bf9c');
+    const manageTasks=this.state.tasks.filter(x=>x.status!=='archived'&&x.status!=='removed').map(x=>({
+      title:x.title,
+      meta:x.kind==='recurring'?(x.rec||'recurring'):x.meta,
+      dotStyle:{width:'9px',height:'9px',borderRadius:'50%',background:dotColor(x),flex:'none'},
+      onEdit:()=>this.editTask(x.id),
+      onDelete:(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); this.deleteFromManage(x.id,x.title); },
+    }));
+
+    const deads=[['none','No deadline'],['today','Today'],['tomorrow','Tomorrow'],['week','This week'],['nextweek','Next week'],['pick','Pick a date']];
+    const recs=[['none','One-off'],['every 3 days','Every 3 days'],['every 7 days','Weekly'],['every 14 days','Fortnightly'],['every 30 days','Monthly'],['custom','Custom']];
+    const deadlineChips=deads.map(([v,l])=>{
+      const sp=v==='pick';
+      return {label:sp?'◷ '+l:l,style:sp?this.chipStyleSpecial(this.state.enrichDead===v):this.chipStyle(this.state.enrichDead===v),onClick:()=>this.setDead(v)};
+    });
+    const recurChips=recs.map(([v,l])=>{
+      const sp=v==='custom';
+      return {label:sp?'⊕ '+l:l,style:sp?this.chipStyleSpecial(this.state.enrichRec===v):this.chipStyle(this.state.enrichRec===v),onClick:()=>this.setRec(v)};
+    });
+
+    // Custom repeat picker (revealed when "Custom" is chosen)
+    const cUnit=this.state.customUnit||'weeks';
+    const cN=this.state.customN||2;
+    const unitChip=(u,l)=>({label:l,onClick:()=>this.setCustomUnit(u),style:cUnit===u
+      ? {flex:'1',textAlign:'center',padding:'9px 0',borderRadius:'9px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'#fff',color:'#2b2824',boxShadow:'0 1px 3px rgba(43,40,36,.12)'}
+      : {flex:'1',textAlign:'center',padding:'9px 0',borderRadius:'9px',font:"700 12.5px/1 'Nunito Sans'",cursor:'pointer',background:'transparent',color:'#8a847a'}});
+    const showCustom=this.state.enrichRec==='custom';
+    const customUnitChips=[unitChip('days','Days'),unitChip('weeks','Weeks'),unitChip('months','Months')];
+    const customSummary='Every '+cN+' '+(cN===1?cUnit.slice(0,-1):cUnit);
+    const stepStyle=(dis)=>({width:'40px',height:'40px',flex:'none',borderRadius:'11px',border:'1.5px solid #e7e2d8',background:dis?'#f6f3ec':'#fff',color:dis?'#cfc9bd':'#2b2824',font:"600 22px/1 'Nunito Sans'",display:'flex',alignItems:'center',justifyContent:'center',cursor:dis?'default':'pointer'});
+    const targetVal=this.state.target;
+    const targetDots=Array.from({length:Math.max(1,targetVal)},(_,i)=>i);
+    const poolCount=this.state.tasks.filter(x=>x.status!=='archived'&&x.status!=='removed').length;
+    const poolEmpty=poolCount===0;
+
+    // Onboarding
+    const onboardItems=this.state.onboardList.map((t,i)=>({label:t,onRemove:()=>this.onOnboardRemove(i)}));
+    const suggestions=['Dishes','Laundry','Water the plants','Reply to emails','Take the bins out','Make the bed'];
+    const suggestChips=suggestions.map(label=>{
+      const on=this.state.onboardList.includes(label);
+      return {label:on?'✓ '+label:label, onClick:()=>this.onOnboardToggle(label),
+        style: on
+          ? {padding:'9px 13px',borderRadius:'11px',font:"700 12px/1 'Nunito Sans'",cursor:'pointer',whiteSpace:'nowrap',background:'#5f8c63',color:'#fbf9f4',border:'1.5px solid #5f8c63'}
+          : {padding:'9px 13px',borderRadius:'11px',font:"700 12px/1 'Nunito Sans'",cursor:'pointer',whiteSpace:'nowrap',background:'#fff',color:'#6f6a60',border:'1.5px solid #e7e2d8'}};
+    });
+
+    return {
+      isWelcome:this.state.screen==='welcome',
+      isOnboardTarget:this.state.screen==='onboardTarget',
+      isOnboardAdd:this.state.screen==='onboardAdd',
+      onboardDraft:this.state.onboardDraft,
+      onboardItems,
+      hasOnboardItems:this.state.onboardList.length>0,
+      suggestChips,
+      onStartOnboard:this.onStartOnboard,
+      onboardToAdd:this.onboardToAdd,
+      onboardBackWelcome:this.onboardBackWelcome,
+      onboardBackTarget:this.onboardBackTarget,
+      onOnboardDraft:this.onOnboardDraft,
+      onOnboardAddItem:this.onOnboardAddItem,
+      onFinishOnboard:this.onFinishOnboard,
+      isDaily:this.state.screen==='daily' && !poolEmpty,
+      isEmptyPool:(this.state.screen==='daily'||this.state.screen==='cleared') && poolEmpty,
+      isTargetHit:this.state.screen==='targetHit',
+      isCleared:this.state.screen==='cleared' && !poolEmpty,
+      isManage:this.state.screen==='manage',
+      hasPendingDelete:!!this.state.pendingDelete,
+      pendingDeleteTitle:this.state.pendingDelete?this.state.pendingDelete.title:'',
+      onCancelDelete:this.onCancelDelete,
+      onConfirmDelete:this.onConfirmDelete,
+      isSettings:this.state.screen==='settings',
+      isStats:this.state.screen==='stats',
+      onStats:this.onStats,
+      lifetimeDone:this.state.lifetimeDone,
+      bestStreak:this.state.bestStreak,
+      targetMetDays:this.state.targetMetDays,
+      targetVal,
+      targetDots,
+      onTargetDec:()=>this.bumpTarget(-1),
+      onTargetInc:()=>this.bumpTarget(1),
+      targetDecStyle:stepStyle(targetVal<=1),
+      targetIncStyle:stepStyle(targetVal>=6),
+      doneToday:this.state.doneToday,
+      poolCount:poolCount,
+      isAdd:this.state.screen==='add',
+      isEnrich:this.state.screen==='enrich',
+      task:t||{title:''},
+      haloStyle,
+      streak:this.state.streak,
+      toast:this.state.toast,
+      showToast:!!this.state.toast,
+      draftValue:this.state.draft,
+      manageTasks,
+      deadlineChips,
+      recurChips,
+      showCustom,
+      customUnitChips,
+      customSummary,
+      customN:cN,
+      decDisabled:cN<=1,
+      onDecCustom:()=>this.bumpCustom(-1),
+      onIncCustom:()=>this.bumpCustom(1),
+      decStyle:stepStyle(cN<=1),
+      incStyle:stepStyle(false),
+      cardRef:this.cardRef,
+      doneHintRef:this.doneHintRef,
+      skipHintRef:this.skipHintRef,
+      dragOverlayRef:this.dragOverlayRef,
+      holding:this.state.holding,
+      holdDiscStyle,
+      holdWashStyle,
+      onCardDown:this.onCardDown,
+      onCardMove:this.onCardMove,
+      onCardUp:this.onCardUp,
+      onFab:this.onFab,
+      onManage:this.onManage,
+      onSettings:this.onSettings,
+      onBackDaily:this.onBackDaily,
+      onKeepGoing:this.onKeepGoing,
+      onDraft:this.onDraft,
+      onAddCreate:this.onAddCreate,
+      onEnrichSave:this.onEnrichSave,
+    };
+  }
+}
+</script>
+</body>
+</html>
