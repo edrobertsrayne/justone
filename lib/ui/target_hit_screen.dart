@@ -95,7 +95,7 @@ class _Stat extends StatelessWidget {
         children: [
           Text(value, style: TextStyle(fontFamily: 'Newsreader', fontWeight: FontWeight.w500, fontSize: 40.4, color: color)),
           const SizedBox(height: 8),
-          Text(label,
+          Text(label.toUpperCase(),
               style: const TextStyle(
                   fontFamily: 'Nunito Sans', fontWeight: FontWeight.w700, fontSize: 8.7, letterSpacing: 1.0, color: Color(0xFFA8A193))),
           const SizedBox(height: 3),

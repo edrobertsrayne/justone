@@ -14,8 +14,8 @@ void main() {
     expect(find.textContaining('Daily target met'), findsOneWidget);
     expect(find.text('5'), findsOneWidget); // streak
     expect(find.text('12'), findsOneWidget); // targetMetDays
-    expect(find.textContaining('Day streak'), findsOneWidget);
-    expect(find.textContaining('On target'), findsOneWidget);
+    expect(find.textContaining('DAY STREAK'), findsOneWidget);
+    expect(find.textContaining('ON TARGET'), findsOneWidget);
     await tester.tap(find.text('Keep going!'));
     expect(kept, isTrue);
   });
