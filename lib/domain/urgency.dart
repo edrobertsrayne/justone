@@ -32,3 +32,21 @@ double urgencyOf(Task task, DateTime now) {
   final u = _floor + _span * _sigmoid(_steepness * r);
   return u.clamp(0.0, 1.0);
 }
+
+/// Daily-card label derived from the same inputs as [urgencyOf] (never stored).
+String metaOf(Task task, DateTime now) {
+  final completed = task.completedAt;
+  if (completed != null && daysBetweenLocalDates(completed, now) == 0) {
+    return 'done today';
+  }
+  final due = task.dueAt;
+  if (due == null) return 'no deadline';
+  final days = daysBetweenLocalDates(now, due); // >0 future, <0 past
+  if (days < 0) {
+    final n = -days;
+    return n == 1 ? '1 day overdue' : '$n days overdue';
+  }
+  if (days == 0) return 'due today';
+  if (days == 1) return 'due tomorrow';
+  return 'due in $days days';
+}
