@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'task.dart';
 import 'user_state.dart';
+import 'urgency.dart' show daysBetweenLocalDates;
 
 /// The intended writes from a pure transition. Phase 3 commits [user] and
 /// [changedTasks] together in one Firestore WriteBatch (D11).
@@ -67,4 +68,38 @@ TransitionResult keepGoing(UserState state) {
     user: state.copyWith(targetDismissed: true),
     changedTasks: const [],
   );
+}
+
+/// Daily rollover (D7). Idempotent: a no-op when [now] is the same local date
+/// as [state.lastActiveDate], so it is safe to call on every resume (D22).
+TransitionResult dailyReset(
+  UserState state,
+  List<Task> tasks,
+  DateTime now, {
+  int defaultRerolls = 3,
+}) {
+  final gap = daysBetweenLocalDates(state.lastActiveDate, now);
+  if (gap == 0) {
+    return TransitionResult(user: state, changedTasks: const []);
+  }
+
+  // Streak counts consecutive local days each with a completion. It breaks when
+  // the day being left ended unbanked, or a full intermediate day was skipped.
+  final brokeStreak = !state.bankedToday || gap >= 2;
+
+  final user = state.copyWith(
+    bankedToday: false,
+    targetDismissed: false,
+    doneToday: 0,
+    rerolls: defaultRerolls,
+    lastActiveDate: now,
+    streak: brokeStreak ? 0 : state.streak,
+  );
+
+  final unbenched = tasks
+      .where((t) => t.status == TaskStatus.benched)
+      .map((t) => t.copyWith(status: TaskStatus.active))
+      .toList();
+
+  return TransitionResult(user: user, changedTasks: unbenched);
 }
