@@ -52,4 +52,10 @@ void main() {
       active(last: DateTime(2026, 6, 20), banked: true), const [], today);
     expect(res.user.streak, 0);
   });
+
+  test('exactly 2-day gap breaks the streak even if last day was banked', () {
+    final res = dailyReset(
+        active(last: DateTime(2026, 6, 21), banked: true), const [], today);
+    expect(res.user.streak, 0);
+  });
 }
