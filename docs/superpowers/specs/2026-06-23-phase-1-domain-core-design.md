@@ -207,11 +207,12 @@ Triggered when `lastActiveDate`'s local date ≠ `now`'s local date.
 - Idempotent: if local dates already equal, returns the input unchanged (no-op) — safe to call on
   every resume (D22). `changedTasks` holds the un-benched tasks.
 
-**Streak-break note:** v1 has **no streak-grace** (research §11). Whether a missed day zeroes
-`streak` is handled at reset by comparing `lastActiveDate` to `now`: if the gap is ≥ 2 local days and
-the previous day wasn't banked, `streak = 0`. (Banking already happened on the active day; the reset
-only needs to detect "a full day passed with nothing banked".) This is the one piece of streak logic
-that lives in `dailyReset`; covered by explicit tests (consecutive day, skipped day, multi-day gap).
+**Streak-break note:** v1 has **no streak-grace** (research §11). The streak counts consecutive local
+days each with ≥1 completion. At reset (new local day detected), it zeroes iff
+**`!bankedToday || gap >= 2`** — i.e. the day being left ended with no completion, or a full
+intermediate day was skipped entirely. (A `gap == 1` day that *was* banked continues the streak.)
+This is the one piece of streak logic that lives in `dailyReset`; covered by explicit tests
+(consecutive banked day, opened-but-not-completed day, multi-day gap).
 
 ---
 
