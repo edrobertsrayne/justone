@@ -18,3 +18,10 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
 
 ## Learnings
 <!-- Append project-specific learnings below as they're discovered. -->
+
+- **Testing `StreamProvider`s backed by `async*` repository streams:** `InMemoryRepository`'s
+  `watchUser()`/`watchTasks()` are single-subscription `async*` generators. In a unit test, calling
+  `container.read(someStreamProvider.future)` with no active listener lets Riverpod 3.x auto-dispose
+  the provider mid-load, so the future never completes and the test times out. Establish a listener
+  first — `container.listen(provider, (_, __) {})` (close it in `addTearDown`) — before awaiting
+  `.future`. Widget tests don't hit this: the widget tree keeps the providers alive.
