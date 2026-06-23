@@ -36,6 +36,64 @@ class SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixi
   // Fraction of card width past which a release commits the action.
   static const double thresholdFraction = 0.25;
 
+  late final AnimationController _spring =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
+  double _width = 0;
+
+  @override
+  void dispose() {
+    _spring.dispose();
+    super.dispose();
+  }
+
+  void _onDragUpdate(DragUpdateDetails d) {
+    setState(() => _dx += d.delta.dx);
+  }
+
+  void _onDragEnd(DragEndDetails d) {
+    final threshold = (_width == 0 ? 200 : _width * thresholdFraction);
+    if (_dx > threshold) {
+      _flingOff(1, widget.onComplete);
+    } else if (_dx < -threshold) {
+      if (widget.canSkip) {
+        _flingOff(-1, widget.onSkip);
+      } else {
+        _springBack();
+        widget.onSkipDenied();
+      }
+    } else {
+      _springBack();
+    }
+  }
+
+  void _springBack() {
+    final from = _dx;
+    _spring
+      ..reset()
+      ..duration = const Duration(milliseconds: 250);
+    final anim = Tween<double>(begin: from, end: 0)
+        .animate(CurvedAnimation(parent: _spring, curve: Curves.easeOutCubic));
+    void listener() => setState(() => _dx = anim.value);
+    anim.addListener(listener);
+    _spring.forward().whenComplete(() => anim.removeListener(listener));
+  }
+
+  void _flingOff(int dir, VoidCallback then) {
+    final target = dir * (_width == 0 ? 800.0 : _width * 1.5);
+    final from = _dx;
+    _spring
+      ..reset()
+      ..duration = const Duration(milliseconds: 200);
+    final anim = Tween<double>(begin: from, end: target)
+        .animate(CurvedAnimation(parent: _spring, curve: Curves.easeOut));
+    void listener() => setState(() => _dx = anim.value);
+    anim.addListener(listener);
+    _spring.forward().whenComplete(() {
+      anim.removeListener(listener);
+      then();
+    });
+  }
+
   double get _doneOpacity => _dx > 0 ? (_dx / 160).clamp(0.0, 1.0) : 0.0;
   double get _skipOpacity => _dx < 0 ? (-_dx / 160).clamp(0.0, 1.0) : 0.0;
 
@@ -45,6 +103,7 @@ class SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixi
     final sz = 340 + u * 160;
     return LayoutBuilder(
       builder: (context, constraints) {
+        _width = constraints.maxWidth;
         return Stack(
           children: [
             // Halo: a single blurred ellipse anchored centre-bottom.
@@ -68,40 +127,45 @@ class SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixi
               ),
             ),
             // The card content.
-            Transform.translate(
-              offset: Offset(_dx, 0),
-              child: Transform.rotate(
-                angle: _dx / 2400, // slight tilt with the drag
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          widget.task.title,
-                          style: const TextStyle(
-                            fontFamily: 'Newsreader',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 40.4,
-                            height: 1.16,
-                            letterSpacing: -0.6,
-                            color: Palette.ink,
+            GestureDetector(
+              onHorizontalDragUpdate: _onDragUpdate,
+              onHorizontalDragEnd: _onDragEnd,
+              onLongPress: widget.onRemove,
+              child: Transform.translate(
+                offset: Offset(_dx, 0),
+                child: Transform.rotate(
+                  angle: _dx / 2400, // slight tilt with the drag
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.task.title,
+                            style: const TextStyle(
+                              fontFamily: 'Newsreader',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 40.4,
+                              height: 1.16,
+                              letterSpacing: -0.6,
+                              color: Palette.ink,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 30,
-                      child: _Hint(label: '✓ DONE', color: Palette.accent, opacity: _doneOpacity),
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 30,
-                      child: _Hint(label: 'SKIP ✕', color: const Color(0xFF6F8099), opacity: _skipOpacity),
-                    ),
-                  ],
+                      Positioned(
+                        top: 0,
+                        left: 30,
+                        child: _Hint(label: '✓ DONE', color: Palette.accent, opacity: _doneOpacity),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 30,
+                        child: _Hint(label: 'SKIP ✕', color: const Color(0xFF6F8099), opacity: _skipOpacity),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
