@@ -17,7 +17,7 @@ Spec: `docs/superpowers/specs/2026-06-23-phase-1-domain-core-design.md`. Roadmap
 - `now` is always a parameter — never call `DateTime.now()` inside domain functions.
 - **Colour tokens (exact):** paper `#f3f1ec`, ink `#2b2824`, mutedStrong `#5c574e`, muted `#8f8a80`, accent `#5f8c63`, terracotta `#c2683f`, icon-cream `#efeae0`. Halo endpoints: calm `rgb(95,140,99)`, urgent `rgb(196,104,63)`.
 - **Type families:** `Newsreader` (serif — display/headings/titles/numerals), `Nunito Sans` (UI/body/labels). Major-second scale, ratio 1.125, base 14px.
-- **Urgency constants (tunable, single source):** floor `0.04`, span `0.94`, steepness `2`, one-off horizon `7` days, undated-one-off baseline `0.35`. "Due" / "cleared" threshold: `urg > 0.04`.
+- **Urgency constants (tunable, single source):** floor `0.04`, span `0.94`, steepness `2`, one-off horizon `7` days, undated-one-off baseline `0.35`. "Due" / "cleared" threshold: `dueThreshold = 0.05` (`urg > 0.05`; must sit strictly above the floor — the sigmoid never reaches the floor, so a `0.04` cutoff would make `cleared` unreachable).
 - **Defaults:** `target` 3, `rerolls` 3.
 - Run all tests with `flutter test`. A single file: `flutter test test/<path>`.
 
@@ -598,7 +598,7 @@ git commit -m "feat(domain): derive daily-card meta label from task inputs"
 
 **Interfaces:**
 - Consumes: `Task`, `TaskStatus`, `urgencyOf`.
-- Produces: `bool isDue(Task task, DateTime now)` (`urgencyOf > 0.04`); `Task? selectTask(Iterable<Task> tasks, DateTime now)` (highest-urgency `active` task; ties → earlier `dueAt` (nulls last) → earlier `createdAt`; `null` if none active).
+- Produces: `bool isDue(Task task, DateTime now)` (`urgencyOf > dueThreshold`, i.e. `> 0.05`); `Task? selectTask(Iterable<Task> tasks, DateTime now)` (highest-urgency `active` task; ties → earlier `dueAt` (nulls last) → earlier `createdAt`; `null` if none active).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -639,9 +639,9 @@ void main() {
     expect(picked!.id, 'active');
   });
 
-  test('isDue tracks the 0.04 threshold', () {
+  test('isDue tracks the dueThreshold (0.05)', () {
     expect(isDue(r('due', overdueDays: 0), now), isTrue);
-    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.04
+    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.042 < 0.05
   });
 }
 ```
@@ -658,7 +658,7 @@ Expected: FAIL — URI for `selection.dart` doesn't exist.
 import 'task.dart';
 import 'urgency.dart';
 
-bool isDue(Task task, DateTime now) => urgencyOf(task, now) > 0.04;
+bool isDue(Task task, DateTime now) => urgencyOf(task, now) > dueThreshold;
 
 /// The single task to serve: highest urgency among active tasks.
 Task? selectTask(Iterable<Task> tasks, DateTime now) {

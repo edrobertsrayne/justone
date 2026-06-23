@@ -1,7 +1,7 @@
 import 'task.dart';
 import 'urgency.dart';
 
-bool isDue(Task task, DateTime now) => urgencyOf(task, now) > 0.05;
+bool isDue(Task task, DateTime now) => urgencyOf(task, now) > dueThreshold;
 
 /// The single task to serve: highest urgency among active tasks.
 Task? selectTask(Iterable<Task> tasks, DateTime now) {

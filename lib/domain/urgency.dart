@@ -9,6 +9,13 @@ const double _steepness = 2.0;
 const int _oneOffHorizonDays = 7;
 const double _undatedBaseline = 0.35;
 
+/// Due/cleared cutoff. Strictly above [_floor]: the sigmoid approaches the
+/// floor from above but never reaches it, so without a margin every dated task
+/// would always read as "due" and `cleared` would be unreachable. A task far
+/// from its due date (r ≈ −3 → urg ≈ 0.042) sits below this and reads as not
+/// due. (Ratified 2026-06-23; see plan Global Constraints.)
+const double dueThreshold = 0.05;
+
 /// Calendar-day difference `b - a` (future positive). Uses UTC anchors on the
 /// civil date components so DST never makes a day 23h/25h and skews the count.
 int daysBetweenLocalDates(DateTime a, DateTime b) {
