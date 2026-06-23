@@ -43,3 +43,28 @@ TransitionResult complete(UserState state, Task task, DateTime now) {
 
   return TransitionResult(user: user, changedTasks: [updated]);
 }
+
+/// Skip / reroll (swipe-left). Benches the task for today, spends a reroll.
+TransitionResult skip(UserState state, Task task) {
+  assert(state.rerolls > 0, 'no rerolls left — caller must guard');
+  return TransitionResult(
+    user: state.copyWith(rerolls: state.rerolls - 1),
+    changedTasks: [task.copyWith(status: TaskStatus.benched)],
+  );
+}
+
+/// Remove a task from the pool entirely (long-press).
+TransitionResult remove(UserState state, Task task) {
+  return TransitionResult(
+    user: state,
+    changedTasks: [task.copyWith(status: TaskStatus.removed)],
+  );
+}
+
+/// "Keep going" from targetHit/cleared — dismiss the celebration for today.
+TransitionResult keepGoing(UserState state) {
+  return TransitionResult(
+    user: state.copyWith(targetDismissed: true),
+    changedTasks: const [],
+  );
+}
