@@ -1,0 +1,14 @@
+import '../domain/task.dart';
+import '../domain/transitions.dart';
+import '../domain/user_state.dart';
+
+/// The data seam. Phase 2 backs this with [InMemoryRepository]; Phase 3 swaps in
+/// a Firestore-backed implementation behind the same three methods.
+abstract class Repository {
+  Stream<UserState> watchUser();
+  Stream<List<Task>> watchTasks();
+
+  /// Apply a pure [TransitionResult]: replace the user, merge changed tasks by
+  /// id, then re-emit both streams.
+  Future<void> commit(TransitionResult result);
+}
