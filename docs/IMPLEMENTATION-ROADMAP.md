@@ -16,7 +16,7 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 | # | Phase | Scope | Status |
 |---|---|---|---|
 | 1 | **Domain core + design system** | Pure-Dart immutable models (`Task`, `UserState`), the urgency curve + `meta` derivation, the selection engine (highest-urg active task), the screen-routing pure function, and the state-transition functions (complete / skip / remove / daily-reset) returning intended writes. Plus the design system: colour tokens, halo colour interpolation, the major-second type scale, `Newsreader`/`Nunito Sans` text styles, `ThemeData`. **No Firebase, no UI. Fully TDD.** | **✅ Complete** (merged to `main`, 48 tests green) |
-| 2 | **Daily-loop UI** | The daily card (swipe-right Done, swipe-left Skip, long-press Remove, finger-following physics, hint labels, halo), plus `cleared` / `emptyPool` / `targetHit` screens and toasts. Driven by the Phase-1 engine against an **in-memory fake repository** (no Firebase yet). | Not started |
+| 2 | **Daily-loop UI** | The daily card (swipe-right Done, swipe-left Skip, long-press Remove, finger-following physics, hint labels, halo), plus `cleared` / `emptyPool` / `targetHit` screens and toasts. Driven by the Phase-1 engine against an **in-memory fake repository** (no Firebase yet). | **✅ Complete** (merged to `main`, 78 tests green) |
 | 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | Not started |
 | 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | Not started |
 | 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | Not started |
@@ -39,6 +39,23 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
   when the actionable pool is genuinely empty.
 - **Day-one seed:** seeded recurring chores get `dueAt = today` so onboarding lands on a populated
   daily card.
+
+## Decisions captured during Phase-2 (2026-06-23)
+
+- **Architecture seam:** a 3-method `Repository` (`watchUser` / `watchTasks` / `commit(TransitionResult)`)
+  backed by `InMemoryRepository` now; Phase 3 swaps in a `FirestoreRepository` behind the same
+  interface. Riverpod (manual providers, no codegen): `StreamProvider`s over the repo, a `Clock`
+  (`nowProvider`) seam so urgency/routing are deterministic in tests, a `ToastController`, and a
+  `DailyController` action layer. Screens are derived **purely** from `routeHome` (no ephemeral
+  screen state). Custom `GestureDetector` + `AnimationController` card (no swipe package).
+- **`cleared` has no "Keep going" / re-serve** — it's terminal for the day; the only exit is
+  "Review pool" → manage. "Keep going" lives only on `targetHit`.
+- **Deferred to Phase 3 (carried from the Phase-2 review):** add `dispose`/`close` to the
+  `Repository` interface (close `InMemoryRepository`'s StreamControllers) for Firestore-listener
+  parity; add a double-tap/in-flight guard to `DailyController.complete` once commits have real
+  latency; when building the long-press hold-ring, **replace** the `SwipeCard`'s shared
+  `GestureDetector` (separate the long-press recognizer from the horizontal drag) so a drifting
+  long-press can't be captured by the drag recognizer and drop `onRemove`.
 
 ## Still genuinely open (from research §11 / backend "still open")
 
