@@ -94,12 +94,12 @@ class SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixi
                     Positioned(
                       top: 0,
                       left: 30,
-                      child: _Hint(label: '✓ Done', color: Palette.accent, opacity: _doneOpacity),
+                      child: _Hint(label: '✓ DONE', color: Palette.accent, opacity: _doneOpacity),
                     ),
                     Positioned(
                       top: 0,
                       right: 30,
-                      child: _Hint(label: 'Skip ✕', color: const Color(0xFF6F8099), opacity: _skipOpacity),
+                      child: _Hint(label: 'SKIP ✕', color: const Color(0xFF6F8099), opacity: _skipOpacity),
                     ),
                   ],
                 ),
