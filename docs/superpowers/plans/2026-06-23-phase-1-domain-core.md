@@ -17,7 +17,7 @@ Spec: `docs/superpowers/specs/2026-06-23-phase-1-domain-core-design.md`. Roadmap
 - `now` is always a parameter — never call `DateTime.now()` inside domain functions.
 - **Colour tokens (exact):** paper `#f3f1ec`, ink `#2b2824`, mutedStrong `#5c574e`, muted `#8f8a80`, accent `#5f8c63`, terracotta `#c2683f`, icon-cream `#efeae0`. Halo endpoints: calm `rgb(95,140,99)`, urgent `rgb(196,104,63)`.
 - **Type families:** `Newsreader` (serif — display/headings/titles/numerals), `Nunito Sans` (UI/body/labels). Major-second scale, ratio 1.125, base 14px.
-- **Urgency constants (tunable, single source):** floor `0.04`, span `0.94`, steepness `2`, one-off horizon `7` days, undated-one-off baseline `0.35`. "Due" / "cleared" threshold: `urg > 0.04`.
+- **Urgency constants (tunable, single source):** floor `0.04`, span `0.94`, steepness `2`, one-off horizon `7` days, undated-one-off baseline `0.35`. "Due" / "cleared" threshold: `dueThreshold = 0.30` (`urg > 0.30`; must sit strictly above the floor — the sigmoid only approaches the floor, so a `0.04` cutoff would make `cleared` unreachable. `0.30` ≈ the urgency a recurring task reaches ~half an interval before due, so that's when it starts surfacing; tunable). Define `dueThreshold` as a public `const` in `urgency.dart` so `selection.dart` shares the single source.
 - **Defaults:** `target` 3, `rerolls` 3.
 - Run all tests with `flutter test`. A single file: `flutter test test/<path>`.
 
@@ -457,6 +457,12 @@ const double _steepness = 2.0;
 const int _oneOffHorizonDays = 7;
 const double _undatedBaseline = 0.35;
 
+/// A task is "due" (surfaces; counts against `cleared`) when its urgency
+/// exceeds this. Must sit strictly above [_floor] — the sigmoid only
+/// approaches the floor, so a 0.04 cutoff would never be crossed. 0.30 ≈ the
+/// urgency reached ~half an interval before due. Public: shared by selection.
+const double dueThreshold = 0.30;
+
 /// Calendar-day difference `b - a` (future positive). Uses UTC anchors on the
 /// civil date components so DST never makes a day 23h/25h and skews the count.
 int daysBetweenLocalDates(DateTime a, DateTime b) {
@@ -598,7 +604,7 @@ git commit -m "feat(domain): derive daily-card meta label from task inputs"
 
 **Interfaces:**
 - Consumes: `Task`, `TaskStatus`, `urgencyOf`.
-- Produces: `bool isDue(Task task, DateTime now)` (`urgencyOf > 0.04`); `Task? selectTask(Iterable<Task> tasks, DateTime now)` (highest-urgency `active` task; ties → earlier `dueAt` (nulls last) → earlier `createdAt`; `null` if none active).
+- Produces: `bool isDue(Task task, DateTime now)` (`urgencyOf > dueThreshold`, i.e. `> 0.30`); `Task? selectTask(Iterable<Task> tasks, DateTime now)` (highest-urgency `active` task; ties → earlier `dueAt` (nulls last) → earlier `createdAt`; `null` if none active).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -639,9 +645,9 @@ void main() {
     expect(picked!.id, 'active');
   });
 
-  test('isDue tracks the 0.04 threshold', () {
-    expect(isDue(r('due', overdueDays: 0), now), isTrue);
-    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.04
+  test('isDue tracks the dueThreshold (0.30)', () {
+    expect(isDue(r('due', overdueDays: 0), now), isTrue); // r=0 -> ~0.51 > 0.30
+    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.042 < 0.30
   });
 }
 ```
@@ -658,7 +664,7 @@ Expected: FAIL — URI for `selection.dart` doesn't exist.
 import 'task.dart';
 import 'urgency.dart';
 
-bool isDue(Task task, DateTime now) => urgencyOf(task, now) > 0.04;
+bool isDue(Task task, DateTime now) => urgencyOf(task, now) > dueThreshold;
 
 /// The single task to serve: highest urgency among active tasks.
 Task? selectTask(Iterable<Task> tasks, DateTime now) {

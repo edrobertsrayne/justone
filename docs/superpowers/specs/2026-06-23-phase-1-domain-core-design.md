@@ -109,12 +109,15 @@ A single **sigmoid in normalised lateness**, plus a special case for undated one
 | due today | 0 | ~0.51 |
 | one cycle overdue | +1 | ~0.87 |
 | two cycles overdue | +2 | ~0.96 |
-| far from due (r = −3) | −3 | ~0.04 (→ below the 0.04 "cleared" threshold) |
+| far from due (r = −3) | −3 | ~0.042 (→ below the cleared threshold) |
 | undated one-off | — | 0.35 (constant) |
 
-Note the floor is `0.04` and the "cleared" threshold is `urg > 0.04`; a task exactly at the
-asymptotic floor counts as *not due* (correctly yields `cleared`). Verify the boundary explicitly in
-tests.
+Note the floor is `0.04` and the "cleared" threshold is `urg > 0.30` (`dueThreshold`). The sigmoid
+*approaches* the floor from above but never reaches it, so the threshold must sit strictly above the
+floor or `cleared` is unreachable. `0.30` ≈ the urgency a recurring task reaches ~half an interval
+before due, so that is when it starts surfacing; a task far from due (r ≈ −3 → ~0.042) falls below
+`0.30` and counts as *not due* (correctly yields `cleared`). The value is tunable. Verify the boundary
+explicitly in tests.
 
 ### `String metaOf(Task task, DateTime now)`
 
@@ -135,7 +138,7 @@ A small `daysBetweenLocalDates(a, b)` helper, unit-tested across DST and month b
 
 ## C. Selection + routing
 
-### `bool isDue(Task task, DateTime now)` → `urgencyOf(task, now) > 0.04`
+### `bool isDue(Task task, DateTime now)` → `urgencyOf(task, now) > 0.30` (`dueThreshold`)
 
 ### `Task? selectTask(Iterable<Task> tasks, DateTime now)`
 
@@ -152,7 +155,7 @@ Encodes HANDOFF §4 routing for the post-auth, onboarded home loop:
 
 1. No tasks at all (none with status `active`/`benched`, i.e. pool empty) → `emptyPool`.
 2. `doneToday >= target && !targetDismissed` → `targetHit`.
-3. No active task is due (`selectTask` is null **or** its urg ≤ 0.04) → `cleared`.
+3. No active task is due (`selectTask` is null **or** its urg ≤ 0.30) → `cleared`.
 4. Otherwise → `daily`.
 
 Auth/onboarding gating (`welcome`, `onboard*`) is layered on top in Phases 3/4 and is out of scope
