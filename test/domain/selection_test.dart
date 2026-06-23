@@ -33,8 +33,8 @@ void main() {
     expect(picked!.id, 'active');
   });
 
-  test('isDue tracks the dueThreshold (0.05)', () {
-    expect(isDue(r('due', overdueDays: 0), now), isTrue);
-    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.042 < 0.05
+  test('isDue tracks the dueThreshold (0.30)', () {
+    expect(isDue(r('due', overdueDays: 0), now), isTrue); // r=0 -> ~0.51 > 0.30
+    expect(isDue(r('faroff', overdueDays: -21), now), isFalse); // r=-3 -> ~0.042 < 0.30
   });
 }

@@ -9,12 +9,11 @@ const double _steepness = 2.0;
 const int _oneOffHorizonDays = 7;
 const double _undatedBaseline = 0.35;
 
-/// Due/cleared cutoff. Strictly above [_floor]: the sigmoid approaches the
-/// floor from above but never reaches it, so without a margin every dated task
-/// would always read as "due" and `cleared` would be unreachable. A task far
-/// from its due date (r ≈ −3 → urg ≈ 0.042) sits below this and reads as not
-/// due. (Ratified 2026-06-23; see plan Global Constraints.)
-const double dueThreshold = 0.05;
+/// A task is "due" (surfaces; counts against `cleared`) when its urgency
+/// exceeds this. Must sit strictly above [_floor] — the sigmoid only
+/// approaches the floor, so a 0.04 cutoff would never be crossed. 0.30 ≈ the
+/// urgency reached ~half an interval before due. Public: shared by selection.
+const double dueThreshold = 0.30;
 
 /// Calendar-day difference `b - a` (future positive). Uses UTC anchors on the
 /// civil date components so DST never makes a day 23h/25h and skews the count.
