@@ -56,3 +56,19 @@ String metaOf(Task task, DateTime now) {
   if (days == 1) return 'due tomorrow';
   return 'due in $days days';
 }
+
+/// Manage-list label (the daily card stays meta-free). Recurring -> recurrence
+/// cadence; one-off -> the due/overdue label from [metaOf].
+String manageMeta(Task task, DateTime now) {
+  if (task.kind == TaskKind.oneOff) return metaOf(task, now);
+  final n = task.intervalDays!;
+  return switch (n) {
+    1 => 'Daily',
+    7 => 'Weekly',
+    14 => 'Fortnightly',
+    30 => 'Monthly',
+    _ when n % 30 == 0 => 'Every ${n ~/ 30} months',
+    _ when n % 7 == 0 => 'Every ${n ~/ 7} weeks',
+    _ => 'Every $n days',
+  };
+}

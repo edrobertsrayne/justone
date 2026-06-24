@@ -82,3 +82,31 @@ int _unitDays(CustomUnit u) => switch (u) {
   }
   return (choice: RepeatChoice.custom, customN: intervalDays, customUnit: CustomUnit.days);
 }
+
+/// Assemble a new/edited Task from chip selections. Used by PoolController so
+/// the chip->field mapping is unit-tested independently of the UI.
+Task buildTask({
+  required String id,
+  required String title,
+  required DeadlineChoice deadline,
+  DateTime? pickedDate,
+  required RepeatChoice repeat,
+  int customN = 2,
+  CustomUnit customUnit = CustomUnit.weeks,
+  required DateTime createdAt,
+  required DateTime now,
+  TaskStatus status = TaskStatus.active,
+  DateTime? completedAt,
+}) {
+  final r = repeatToFields(repeat, customN: customN, customUnit: customUnit);
+  return Task(
+    id: id,
+    title: title.trim(),
+    kind: r.kind,
+    intervalDays: r.intervalDays,
+    dueAt: dueAtFor(deadline, now, pickedDate: pickedDate),
+    createdAt: createdAt,
+    completedAt: completedAt,
+    status: status,
+  );
+}
