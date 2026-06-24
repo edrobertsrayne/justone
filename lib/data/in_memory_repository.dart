@@ -46,6 +46,12 @@ class InMemoryRepository implements Repository {
     _tasksCtrl.add(List<Task>.unmodifiable(_tasks));
   }
 
+  @override
+  void dispose() {
+    _userCtrl.close();
+    _tasksCtrl.close();
+  }
+
   /// A realistic pool for running the app by hand. At least one task is due so
   /// the app opens on `daily`. Tests construct [InMemoryRepository] directly.
   factory InMemoryRepository.seeded() {
