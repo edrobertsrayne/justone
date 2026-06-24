@@ -38,7 +38,22 @@ class FirestoreRepository implements Repository {
     for (final task in result.changedTasks) {
       batch.set(_tasksRef.doc(task.id), taskToFirestore(task));
     }
-    batch.set(_userRef, userToFirestore(result.user), SetOptions(merge: true));
+    // All user fields are absolute last-write-wins (D9) except the two additive
+    // lifetime tallies, which use server-relative increments to survive the rare
+    // two-devices-offline-same-day race.
+    final base = _lastUser;
+    final data = userToFirestore(result.user)
+      ..remove('lifetimeDone')
+      ..remove('targetMetDays');
+    batch.set(_userRef, data, SetOptions(merge: true));
+    batch.set(
+      _userRef,
+      {
+        'lifetimeDone': FieldValue.increment(result.user.lifetimeDone - (base?.lifetimeDone ?? 0)),
+        'targetMetDays': FieldValue.increment(result.user.targetMetDays - (base?.targetMetDays ?? 0)),
+      },
+      SetOptions(merge: true),
+    );
     await batch.commit();
   }
 

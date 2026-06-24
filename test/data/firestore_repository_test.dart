@@ -40,4 +40,19 @@ void main() {
     expect((await db.doc('users/u1').get()).data()!['doneToday'], 1);
     expect((await db.doc('users/u1/tasks/t1').get()).data()!['status'], 'archived');
   });
+
+  test('lifetimeDone is written as a server-relative increment, not absolute', () async {
+    final db = FakeFirebaseFirestore();
+    await db.doc('users/u1').set(userToFirestore(_user())); // lifetimeDone: 10
+    final repo = FirestoreRepository(db, 'u1');
+    final sub = repo.watchUser().listen((_) {});
+    await Future<void>.delayed(Duration.zero); // primes _lastUser at lifetimeDone 10
+    await sub.cancel(); // freeze the base at 10 so the concurrent bump below is not tracked
+    // Simulate another device bumping the server value to 100.
+    await db.doc('users/u1').set({'lifetimeDone': 100}, SetOptions(merge: true));
+    // Our commit computes delta from base(10) -> new(11) == +1.
+    await repo.commit(TransitionResult(user: _user().copyWith(lifetimeDone: 11), changedTasks: const []));
+    // increment(1) applied on top of 100 -> 101 (absolute would have written 11).
+    expect((await db.doc('users/u1').get()).data()!['lifetimeDone'], 101);
+  });
 }
