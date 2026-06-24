@@ -19,6 +19,7 @@ enum AppScreen {
 /// Home-loop routing for a signed-in, onboarded user (HANDOFF §4).
 /// Auth/onboarding gating (welcome, onboard*) is layered on in later phases.
 AppScreen routeHome(UserState state, List<Task> tasks, DateTime now) {
+  if (!state.onboardingComplete) return AppScreen.onboardTarget;
   final poolEmpty = !tasks.any((t) =>
       t.status == TaskStatus.active || t.status == TaskStatus.benched);
   if (poolEmpty) return AppScreen.emptyPool;

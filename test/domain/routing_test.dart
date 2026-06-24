@@ -6,7 +6,7 @@ import 'package:justone/domain/routing.dart';
 
 void main() {
   final now = DateTime(2026, 6, 23, 12);
-  final user = UserState(timezone: 'UTC', lastActiveDate: now);
+  final user = UserState(timezone: 'UTC', lastActiveDate: now, onboardingComplete: true);
 
   Task due(String id) => Task(
         id: id, title: id, kind: TaskKind.recurring, intervalDays: 7,
@@ -42,5 +42,11 @@ void main() {
 
   test('a due task -> daily', () {
     expect(routeHome(user, [due('a')], now), AppScreen.daily);
+  });
+
+  test('not onboarded -> onboardTarget regardless of pool', () {
+    final fresh = UserState(timezone: 'UTC', lastActiveDate: now); // onboardingComplete defaults false
+    expect(routeHome(fresh, const [], now), AppScreen.onboardTarget);
+    expect(routeHome(fresh, [due('a')], now), AppScreen.onboardTarget);
   });
 }
