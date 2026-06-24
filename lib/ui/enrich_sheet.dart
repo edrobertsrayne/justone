@@ -15,20 +15,19 @@ Future<void> showEnrichSheet(BuildContext context, WidgetRef ref,
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => _EnrichSheet(title: title, existing: existing, ref: ref),
+    builder: (_) => _EnrichSheet(title: title, existing: existing),
   );
 }
 
-class _EnrichSheet extends StatefulWidget {
-  const _EnrichSheet({this.title, this.existing, required this.ref});
+class _EnrichSheet extends ConsumerStatefulWidget {
+  const _EnrichSheet({this.title, this.existing});
   final String? title;
   final Task? existing;
-  final WidgetRef ref;
   @override
-  State<_EnrichSheet> createState() => _EnrichSheetState();
+  ConsumerState<_EnrichSheet> createState() => _EnrichSheetState();
 }
 
-class _EnrichSheetState extends State<_EnrichSheet> {
+class _EnrichSheetState extends ConsumerState<_EnrichSheet> {
   late DeadlineChoice _deadline;
   late RepeatChoice _repeat;
   late int _customN;
@@ -38,11 +37,7 @@ class _EnrichSheetState extends State<_EnrichSheet> {
   @override
   void initState() {
     super.initState();
-    // Ensure userProvider is alive and resolved before _save reads its
-    // .value: with no listener anywhere in the tree, the StreamProvider
-    // never starts, so a bare ref.read(...).value would stay null.
-    widget.ref.listenManual(userProvider, (_, __) {});
-    final now = widget.ref.read(nowProvider)();
+    final now = ref.read(nowProvider)();
     final t = widget.existing;
     _deadline = t == null ? DeadlineChoice.none : deadlineChoiceFor(t.dueAt, now);
     _pickedDate = (_deadline == DeadlineChoice.pickDate) ? t!.dueAt : null;
@@ -57,7 +52,7 @@ class _EnrichSheetState extends State<_EnrichSheet> {
   String get _title => widget.existing?.title ?? widget.title ?? '';
 
   Future<void> _pickDate() async {
-    final now = widget.ref.read(nowProvider)();
+    final now = ref.read(nowProvider)();
     final picked = await showDatePicker(
       context: context,
       initialDate: _pickedDate ?? now,
@@ -68,9 +63,9 @@ class _EnrichSheetState extends State<_EnrichSheet> {
   }
 
   Future<void> _save() async {
-    final user = widget.ref.read(userProvider).value;
+    final user = ref.read(userProvider).value;
     if (user == null) { Navigator.of(context).pop(); return; }
-    final pool = widget.ref.read(poolControllerProvider);
+    final pool = ref.read(poolControllerProvider);
     final existing = widget.existing;
     if (existing == null) {
       await pool.add(user,
@@ -86,6 +81,10 @@ class _EnrichSheetState extends State<_EnrichSheet> {
 
   @override
   Widget build(BuildContext context) {
+    // Watching (not just reading) keeps userProvider alive and resolved for
+    // the sheet's lifetime, scoped to this ConsumerState's own ref so it's
+    // auto-cancelled on dispose; _save reads the resolved value via ref.read.
+    ref.watch(userProvider);
     return Container(
       decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
       padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
