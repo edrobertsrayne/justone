@@ -17,7 +17,7 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 |---|---|---|---|
 | 1 | **Domain core + design system** | Pure-Dart immutable models (`Task`, `UserState`), the urgency curve + `meta` derivation, the selection engine (highest-urg active task), the screen-routing pure function, and the state-transition functions (complete / skip / remove / daily-reset) returning intended writes. Plus the design system: colour tokens, halo colour interpolation, the major-second type scale, `Newsreader`/`Nunito Sans` text styles, `ThemeData`. **No Firebase, no UI. Fully TDD.** | **✅ Complete** (merged to `main`, 48 tests green) |
 | 2 | **Daily-loop UI** | The daily card (swipe-right Done, swipe-left Skip, long-press Remove, finger-following physics, hint labels, halo), plus `cleared` / `emptyPool` / `targetHit` screens and toasts. Driven by the Phase-1 engine against an **in-memory fake repository** (no Firebase yet). | **✅ Complete** (merged to `main`, 78 tests green) |
-| 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | Not started |
+| 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | **✅ Complete** (merged to `main`, 101 tests green) |
 | 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | Not started |
 | 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | Not started |
 | 6 | **Notifications** | Cloud Function (TypeScript, Functions v2, `onSchedule("every 15 minutes")`, D16) scanning user docs and sending FCM per timezone/reminder window with idempotency + escalation (D3/D5/D17); FCM token registration in a `devices` subcollection (D4); runtime permission flow at end of onboarding with a settings re-enable path (D14); notification-type payloads (D15). | Not started |
@@ -56,6 +56,36 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
   latency; when building the long-press hold-ring, **replace** the `SwipeCard`'s shared
   `GestureDetector` (separate the long-press recognizer from the horizontal drag) so a drifting
   long-press can't be captured by the drag recognizer and drop `onRemove`.
+
+## Decisions captured during Phase-3 (2026-06-24)
+
+- **Repository swap behind the seam:** `FirestoreRepository(db, uid)` implements the unchanged
+  3-method `Repository`; `repositoryProvider` reads the signed-in uid from `authProvider` and is
+  rebuilt+disposed on auth change (sign-out/account-switch swaps the data layer). The entire
+  Phase-2 UI/controllers/domain are untouched. `Repository.dispose()` was added (Phase-2 carry-over);
+  on `FirestoreRepository` it is an intentional **no-op** — `watchUser`/`watchTasks` return Firestore
+  `snapshots()` streams directly, so the listening `StreamProvider` owns cancellation.
+- **D9 increment diffing lives in the repository, not the domain:** `commit` writes `lifetimeDone`/
+  `targetMetDays` as `FieldValue.increment(result.user.X − _lastUser.X)` (base = last `watchUser`
+  emission) and every other user field absolute last-write-wins, all in one `WriteBatch` (D11). The
+  pure transitions still return absolute values. Correct across lagged-base + concurrent-write
+  (cross-device test proves lost-update safety).
+- **Daily reset (D22) via `DailyResetScope`** — a `WidgetsBindingObserver` wrapping the signed-in
+  subtree; runs the pure `dailyReset` on cold-start + every resume, commits only when the local day
+  advanced (`_busy` re-entrancy guard). It **normalizes `now` to a calendar date** before the call so
+  `lastActiveDate` stays a midnight `DateTime`, consistent with bootstrap/mappers/`seeded()`.
+- **Testing is Dart-fakes-only (no device/emulator in CI):** `fake_cloud_firestore` +
+  `firebase_auth_mocks` in plain `flutter test`. Owner-isolation rules (D12) are **not** covered by
+  automated tests (the fakes have no rules engine) — verified by the documented manual emulator check
+  in `docs/superpowers/phase-3-manual-rules-check.md`. First-run sign-in (onboardingComplete:false,
+  empty pool) routes to `emptyPool` → placeholder; the real onboarding wizard is Phase 4.
+- **Deferred to Phase 4+ (from the Phase-3 final review):** move the `GoogleSignInException` cancel
+  handling behind `AuthService` when the designed welcome screen lands, so `lib/ui/` drops the
+  `google_sign_in` import; harden `signOut()` (currently calls `GoogleSignIn.signOut()` even if
+  `initialize()` never ran); the `(D18)` comment in `main.dart` is a dangling ref. **Before first
+  deploy/device run:** run the manual rules check, and do the one-time manual device smoke
+  (`firebase emulators:start` → `tool/seed_emulator.dart` → `flutter run` → verify daily card,
+  complete/skip/remove writes land, and the reset fires on resume past local midnight).
 
 ## Still genuinely open (from research §11 / backend "still open")
 
