@@ -15,22 +15,27 @@ class FirebaseAuthService implements AuthService {
 
   @override
   Future<void> signInWithGoogle() async {
-    if (!_initialized) {
-      await GoogleSignIn.instance.initialize();
-      _initialized = true;
+    try {
+      if (!_initialized) {
+        await GoogleSignIn.instance.initialize();
+        _initialized = true;
+      }
+      final account = await GoogleSignIn.instance.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw StateError('Google Sign-In returned no ID token; check the OAuth client configuration.');
+      }
+      final credential = GoogleAuthProvider.credential(idToken: idToken);
+      await _auth.signInWithCredential(credential);
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return; // user backed out — silent
+      rethrow;
     }
-    final account = await GoogleSignIn.instance.authenticate(); // throws GoogleSignInException on cancel/error
-    final idToken = account.authentication.idToken;
-    if (idToken == null) {
-      throw StateError('Google Sign-In returned no ID token; check the OAuth client configuration.');
-    }
-    final credential = GoogleAuthProvider.credential(idToken: idToken);
-    await _auth.signInWithCredential(credential);
   }
 
   @override
   Future<void> signOut() async {
-    await GoogleSignIn.instance.signOut();
+    if (_initialized) await GoogleSignIn.instance.signOut();
     await _auth.signOut();
   }
 }

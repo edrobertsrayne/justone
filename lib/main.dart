@@ -11,7 +11,7 @@ import 'theme/app_theme.dart';
 import 'ui/toast.dart';
 
 /// Emulator on by default in debug; override for a real-device push test with
-/// `--dart-define=USE_EMULATOR=false` (D18).
+/// `--dart-define=USE_EMULATOR=false`.
 const kUseEmulator = bool.fromEnvironment('USE_EMULATOR', defaultValue: kDebugMode);
 
 Future<void> main() async {
