@@ -21,6 +21,9 @@ class FirebaseAuthService implements AuthService {
     }
     final account = await GoogleSignIn.instance.authenticate(); // throws GoogleSignInException on cancel/error
     final idToken = account.authentication.idToken;
+    if (idToken == null) {
+      throw StateError('Google Sign-In returned no ID token; check the OAuth client configuration.');
+    }
     final credential = GoogleAuthProvider.credential(idToken: idToken);
     await _auth.signInWithCredential(credential);
   }
