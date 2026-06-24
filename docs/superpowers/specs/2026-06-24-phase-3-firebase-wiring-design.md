@@ -141,7 +141,10 @@ exists, seed tasks into the emulator with `tool/seed_emulator` (§H).
     for all fields **except** the two D9 counters, which are written as
     `FieldValue.increment(result.user.X - lastEmitted.X)` (see §F).
   - `await batch.commit()` (lands in the local cache instantly offline; syncs later).
-- `dispose()` → cancels the two snapshot subscriptions.
+- `dispose()` → a documented **no-op**: `watchUser`/`watchTasks` return Firestore's
+  `snapshots()` streams directly, so the listening `StreamProvider` cancels the subscription
+  when `repositoryProvider` is disposed (sign-out/account-switch). The method exists to satisfy
+  the seam, which `InMemoryRepository` needs in order to close its `StreamController`s.
 
 `providers.dart` changes:
 - `firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);`
