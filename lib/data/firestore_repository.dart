@@ -64,4 +64,7 @@ class FirestoreRepository implements Repository {
     // disposed (sign-out / account-switch). Present to satisfy the Repository seam,
     // which InMemoryRepository needs to close its StreamControllers.
   }
+
+  @override
+  String newTaskId() => _tasksRef.doc().id;
 }
