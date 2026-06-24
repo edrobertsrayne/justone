@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:justone/data/firestore_mappers.dart';
 import 'package:justone/domain/task.dart';
+import 'package:justone/domain/user_state.dart';
 
 void main() {
   test('round-trips a recurring task', () {
@@ -49,5 +50,34 @@ void main() {
       () => taskFromFirestore('x', {'title': 'a', 'kind': 'one-off', 'status': 'active', 'intervalDays': 5, 'createdAt': Timestamp.fromDate(DateTime(2026))}),
       throwsFormatException,
     );
+  });
+
+  test('round-trips a user with reminders and a date string', () {
+    final u = UserState(
+      timezone: 'Europe/London',
+      target: 4,
+      remindersWeekday: const ['08:00', '18:30'],
+      remindersWeekend: const ['10:00'],
+      onboardingComplete: true,
+      streak: 5,
+      bestStreak: 9,
+      targetMetDays: 12,
+      lifetimeDone: 40,
+      bankedToday: true,
+      doneToday: 2,
+      rerolls: 1,
+      lastActiveDate: DateTime(2026, 6, 24),
+    );
+    final doc = userToFirestore(u);
+    expect(doc['lastActiveDate'], '2026-06-24');
+    expect(doc['reminders'], {'weekday': ['08:00', '18:30'], 'weekend': ['10:00']});
+    expect(userFromFirestore(doc), u);
+  });
+
+  test('userFromFirestore zero-pads and parses the date string', () {
+    final u = userFromFirestore(userToFirestore(
+      UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 1, 5)),
+    ));
+    expect(u.lastActiveDate, DateTime(2026, 1, 5));
   });
 }
