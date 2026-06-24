@@ -9,6 +9,7 @@ import '../theme/palette.dart';
 import 'cleared_screen.dart';
 import 'daily_screen.dart';
 import 'empty_pool_screen.dart';
+import 'onboarding_flow.dart';
 import 'placeholder_screen.dart';
 import 'target_hit_screen.dart';
 
@@ -34,12 +35,13 @@ class HomeRouter extends ConsumerWidget {
 
     final screen = routeHome(user, tasks, now);
     final child = switch (screen) {
+      AppScreen.onboardTarget => const OnboardingFlow(),
       AppScreen.daily => DailyScreen(user: user, task: selectTask(tasks, now)!),
       AppScreen.cleared => ClearedScreen(onReviewPool: () => _open(context, 'Manage')),
       AppScreen.emptyPool => EmptyPoolScreen(onAdd: () => _open(context, 'Add')),
       AppScreen.targetHit =>
         TargetHitScreen(user: user, onKeepGoing: () => ref.read(dailyControllerProvider).keepGoing(user)),
-      // welcome/onboard*/add/manage/settings/stats are not reachable from the
+      // welcome/add/manage/settings/stats are not reachable from the
       // Phase-2 home loop (auth + those screens arrive later).
       _ => const ColoredBox(color: Palette.paper, child: SizedBox.expand()),
     };
