@@ -1,5 +1,7 @@
 import 'task.dart';
+import 'transitions.dart';
 import 'urgency.dart' show daysBetweenLocalDates;
+import 'user_state.dart';
 
 enum DeadlineChoice { none, today, tomorrow, thisWeek, nextWeek, pickDate }
 enum RepeatChoice { oneOff, every3, weekly, fortnightly, monthly, custom }
@@ -108,5 +110,37 @@ Task buildTask({
     createdAt: createdAt,
     completedAt: completedAt,
     status: status,
+  );
+}
+
+/// Onboarding batch seed (D23): N task docs + target + onboardingComplete +
+/// lastActiveDate, committed in one WriteBatch. Reminders defaults are already
+/// written at bootstrap, so they are not re-written here.
+TransitionResult seedOnboarding(UserState state,
+    {required int target, required List<Task> tasks, required DateTime now}) {
+  return TransitionResult(
+    user: state.copyWith(
+      target: target,
+      onboardingComplete: true,
+      lastActiveDate: DateTime(now.year, now.month, now.day),
+    ),
+    changedTasks: tasks,
+  );
+}
+
+/// Add or edit a single task. User is unchanged; commit re-merges it (D9 LWW).
+TransitionResult saveTask(UserState state, Task task) =>
+    TransitionResult(user: state, changedTasks: [task]);
+
+/// Settings write — target and/or reminder arrays.
+TransitionResult updateSettings(UserState state,
+    {int? target, List<String>? weekday, List<String>? weekend}) {
+  return TransitionResult(
+    user: state.copyWith(
+      target: target,
+      remindersWeekday: weekday,
+      remindersWeekend: weekend,
+    ),
+    changedTasks: const [],
   );
 }
