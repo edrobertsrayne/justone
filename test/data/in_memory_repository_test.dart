@@ -55,4 +55,21 @@ void main() {
     final tasks = await repo.watchTasks().first;
     expect(routeHome(user, tasks, DateTime.now()), AppScreen.daily);
   });
+
+  test('dispose closes the controllers so further commits throw', () async {
+    final repo = InMemoryRepository(
+      user: UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 23)),
+      tasks: const [],
+    );
+    repo.watchUser().listen((_) {});
+    repo.watchTasks().listen((_) {});
+    repo.dispose();
+    expect(
+      () => repo.commit(TransitionResult(
+        user: UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 24)),
+        changedTasks: const [],
+      )),
+      throwsStateError,
+    );
+  });
 }

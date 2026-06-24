@@ -11,4 +11,8 @@ abstract class Repository {
   /// Apply a pure [TransitionResult]: replace the user, merge changed tasks by
   /// id, then re-emit both streams.
   Future<void> commit(TransitionResult result);
+
+  /// Release resources (Firestore listeners / stream controllers). Called when
+  /// the repository is replaced (e.g. sign-out) or the app shuts down.
+  void dispose();
 }
