@@ -17,8 +17,11 @@ These bind every task. Exact values are authoritative.
 
 - **No new runtime dependencies.** All Firebase packages are already in `pubspec.yaml`:
   `firebase_core ^4.11.0`, `firebase_auth ^6.5.4`, `cloud_firestore ^6.6.0`,
-  `google_sign_in ^7.2.0`, `flutter_riverpod ^3.3.2`, `flutter_timezone ^5.1.0`.
-  `integration_test` (from the Flutter SDK) is added as a **dev** dependency.
+  `google_sign_in ^7.2.0`, `flutter_riverpod ^3.3.2`, `flutter_timezone ^5.1.0`. Two **dev**
+  dependencies are added for VM testing: `fake_cloud_firestore` and `firebase_auth_mocks` —
+  pin to versions compatible with `cloud_firestore 6.6.0` / `firebase_auth 6.5.4` (verify at
+  plan time, like the `google_sign_in` surface). **No device/emulator is used by any automated
+  test.**
 - **The `Repository` interface is the only seam.** No Firebase imports anywhere in `lib/`
   outside `lib/data/firestore_*.dart`, `lib/auth/`, and `lib/main.dart`. Domain, UI, and the
   Phase-2 controllers must not learn that Firestore exists.
@@ -28,8 +31,10 @@ These bind every task. Exact values are authoritative.
   diffing, and validation live in the data layer, not in `lib/domain/`.
 - **Google Sign-In only, mandatory (D8).** No anonymous auth, no email/password in this phase.
 - **Owner-isolation only for rules (D12).** No field/schema/transition validation in rules.
-- **Develop against the Firebase Emulator Suite (D18).** Never against `just-one-db69c` prod
-  with real data. Emulator wiring is compile-time gated and on by default in debug.
+- **Develop against the Firebase Emulator Suite (D18)** for *running the app by hand* and the
+  one-time manual rules check — never against `just-one-db69c` prod with real data. Emulator
+  wiring is compile-time gated and on by default in debug. Automated tests use Dart fakes, not
+  the emulator.
 - **`google_sign_in` 7.x is instance-based** (`GoogleSignIn.instance` + `authenticate()`),
   *not* the old `GoogleSignIn().signIn()`. Pin code to 7.2.0's surface (see §B).
 - **Firestore field names are canonical** per the data model in `backend-decisions.md`
@@ -242,10 +247,14 @@ service cloud.firestore {
 }
 ```
 
-The recursive `{document=**}` covers `tasks` + (future) `devices`.
+The recursive `{document=**}` covers `tasks` + (future) `devices`. **Verified by a documented
+one-time manual check** against the Firestore emulator (the Dart fakes have no rules engine, so
+rules are not automatically covered — see Testing). Record the check steps in
+`docs/superpowers/` so they are repeatable when rules change in a later phase.
 
 **`firebase.json`** — add an `emulators` block (auth :9099, firestore :8080, ui enabled) so
-`firebase emulators:start` serves Auth + Firestore locally.
+`firebase emulators:start` serves Auth + Firestore locally for running the app by hand and for
+the manual rules check.
 
 **`tool/seed_emulator.dart`** — a small standalone script (run against the emulator) that writes
 one onboarded user (`onboardingComplete: true`) plus a handful of sample tasks mirroring the old
@@ -254,21 +263,36 @@ exists. Debug/dev tooling only; not shipped, not referenced from `lib/`.
 
 ## Testing
 
-Two runners, split by what needs a platform:
+**One runner: `flutter test` on the Dart VM — no device, no emulator.** Firebase-facing code is
+exercised through in-memory Dart fakes (`fake_cloud_firestore`, `firebase_auth_mocks`), which
+implement the real `cloud_firestore`/`firebase_auth` API surface without platform channels.
+`FirestoreRepository`, `ensureUserDoc`, and `DailyResetScope` all take their
+`FirebaseFirestore` / auth dependencies by injection, so a test passes a fake instance.
 
-- **VM (`flutter test`)** — the existing 78 tests stay green (they use `InMemoryRepository`,
-  which is retained), plus new **pure** tests for `firestore_mappers.dart`: round-trip each
-  model, enum/Timestamp/date-string conversions, reminders map shape, and the defensive
-  validation throwing on malformed task docs.
-- **Emulator (`flutter test integration_test`, run on the Android emulator against the Firebase
-  emulator)** —
-  - `FirestoreRepository`: `watchUser`/`watchTasks` emit on doc changes; `commit` writes task +
-    user atomically in one batch; the D9 fields land as increments (two commits accumulate).
-  - Daily reset: a doc with a stale `lastActiveDate` triggers exactly one reset commit
-    (counters cleared, benched→active, streak rule honoured); same-day is a no-op.
-  - Bootstrap: missing doc → defaults written once; existing doc → only `timezone` refreshed.
-  - Security rules: signed-in user A may read/write its own tree; reads/writes of user B's tree
-    are denied (two emulator Auth users).
+- **Existing 78 tests stay green** (they use `InMemoryRepository`, which is retained).
+- **Pure mappers** (`firestore_mappers.dart`): round-trip each model, enum/Timestamp/date-string
+  conversions, reminders map shape, and the defensive validation throwing on malformed task docs.
+- **`FirestoreRepository`** (via `fake_cloud_firestore`): `watchUser`/`watchTasks` emit on doc
+  changes; `commit` writes the task doc(s) **and** user doc in one batch; the two D9 fields land
+  as increments (assert two successive commits accumulate, and that a lagged base still yields
+  the correct server value).
+- **Daily reset** (`DailyResetScope` decision logic, via fakes): a doc with a stale
+  `lastActiveDate` produces exactly one reset commit (counters cleared, benched→active, streak
+  rule honoured); same-local-day is a no-op.
+- **Bootstrap** (`ensureUserDoc`, via fakes): missing doc → defaults written once; existing doc
+  → only `timezone` refreshed, counters untouched.
+- **Auth/gate** (via `firebase_auth_mocks`): `AuthGate` shows `SignInScreen` when signed out and
+  the app shell when signed in; sign-in success/cancel/failure paths on `SignInScreen`.
+
+**Not automatically covered — owner-isolation rules (D12).** The fakes have no rules engine.
+Rules are verified by the documented one-time manual emulator check (§H): sign in as user A,
+confirm own-tree read/write succeeds and user B's tree is denied. Acceptable because the rule is
+four lines and static; re-run the check only when rules change.
+
+**Fidelity caveat.** A fake is not the real Firestore — server timestamps, real index
+requirements, and some `FieldValue` edge cases are not exercised. Mitigated by keeping the
+mappers pure and exhaustively tested, and by a one-time manual smoke test of the running app
+against the real emulator on a device before declaring Phase 3 done.
 
 ## Error handling
 
@@ -306,7 +330,11 @@ Two runners, split by what needs a platform:
 | `lib/app/daily_reset_scope.dart` | new — `WidgetsBindingObserver` reset trigger (D22) |
 | `firestore.rules` | modify — owner-isolation (D12) |
 | `firebase.json` | modify — add `emulators` block |
-| `tool/seed_emulator.dart` | new — dev-only emulator seed |
-| `pubspec.yaml` | modify — add `integration_test` dev dep |
-| `integration_test/*` | new — emulator tests (repo, reset, bootstrap, rules) |
-| `test/data/firestore_mappers_test.dart` | new — pure mapper tests |
+| `tool/seed_emulator.dart` | new — dev-only emulator seed (hand-testing) |
+| `pubspec.yaml` | modify — add `fake_cloud_firestore` + `firebase_auth_mocks` dev deps |
+| `test/data/firestore_mappers_test.dart` | new — pure mapper tests (VM) |
+| `test/data/firestore_repository_test.dart` | new — repo via `fake_cloud_firestore` (VM) |
+| `test/auth/bootstrap_test.dart` | new — `ensureUserDoc` via fakes (VM) |
+| `test/auth/auth_gate_test.dart` | new — gate + sign-in via `firebase_auth_mocks` (VM) |
+| `test/app/daily_reset_scope_test.dart` | new — reset decision logic via fakes (VM) |
+| `docs/superpowers/phase-3-manual-rules-check.md` | new — repeatable owner-isolation check steps |
