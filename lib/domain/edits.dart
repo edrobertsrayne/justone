@@ -1,0 +1,84 @@
+import 'task.dart';
+import 'urgency.dart' show daysBetweenLocalDates;
+
+enum DeadlineChoice { none, today, tomorrow, thisWeek, nextWeek, pickDate }
+enum RepeatChoice { oneOff, every3, weekly, fortnightly, monthly, custom }
+enum CustomUnit { days, weeks, months }
+
+/// Deadline chip -> dueAt (date-only, local). Day arithmetic via the
+/// year/month/day constructor so DST never shifts the result off midnight.
+DateTime? dueAtFor(DeadlineChoice choice, DateTime now, {DateTime? pickedDate}) {
+  DateTime plus(int days) => DateTime(now.year, now.month, now.day + days);
+  return switch (choice) {
+    DeadlineChoice.none => null,
+    DeadlineChoice.today => plus(0),
+    DeadlineChoice.tomorrow => plus(1),
+    DeadlineChoice.thisWeek => plus(7),
+    DeadlineChoice.nextWeek => plus(14),
+    DeadlineChoice.pickDate =>
+      DateTime(pickedDate!.year, pickedDate!.month, pickedDate!.day),
+  };
+}
+
+/// dueAt -> the chip that produced it (for edit pre-selection).
+DeadlineChoice deadlineChoiceFor(DateTime? dueAt, DateTime now) {
+  if (dueAt == null) return DeadlineChoice.none;
+  return switch (daysBetweenLocalDates(now, dueAt)) {
+    0 => DeadlineChoice.today,
+    1 => DeadlineChoice.tomorrow,
+    7 => DeadlineChoice.thisWeek,
+    14 => DeadlineChoice.nextWeek,
+    _ => DeadlineChoice.pickDate,
+  };
+}
+
+int _unitDays(CustomUnit u) => switch (u) {
+      CustomUnit.days => 1,
+      CustomUnit.weeks => 7,
+      CustomUnit.months => 30,
+    };
+
+/// Repeat chip -> (kind, intervalDays). month == 30 days (matches "Monthly").
+({TaskKind kind, int? intervalDays}) repeatToFields(
+  RepeatChoice choice, {
+  int customN = 2,
+  CustomUnit customUnit = CustomUnit.weeks,
+}) {
+  return switch (choice) {
+    RepeatChoice.oneOff => (kind: TaskKind.oneOff, intervalDays: null),
+    RepeatChoice.every3 => (kind: TaskKind.recurring, intervalDays: 3),
+    RepeatChoice.weekly => (kind: TaskKind.recurring, intervalDays: 7),
+    RepeatChoice.fortnightly => (kind: TaskKind.recurring, intervalDays: 14),
+    RepeatChoice.monthly => (kind: TaskKind.recurring, intervalDays: 30),
+    RepeatChoice.custom => (
+        kind: TaskKind.recurring,
+        intervalDays: customN.clamp(1, 99) * _unitDays(customUnit),
+      ),
+  };
+}
+
+/// (kind, intervalDays) -> chip selection. Presets win; otherwise Custom,
+/// decomposed to the largest exact unit (months, then weeks, then days).
+({RepeatChoice choice, int customN, CustomUnit customUnit}) repeatChoiceFor(
+    TaskKind kind, int? intervalDays) {
+  if (kind == TaskKind.oneOff || intervalDays == null) {
+    return (choice: RepeatChoice.oneOff, customN: 2, customUnit: CustomUnit.weeks);
+  }
+  switch (intervalDays) {
+    case 3:
+      return (choice: RepeatChoice.every3, customN: 3, customUnit: CustomUnit.days);
+    case 7:
+      return (choice: RepeatChoice.weekly, customN: 1, customUnit: CustomUnit.weeks);
+    case 14:
+      return (choice: RepeatChoice.fortnightly, customN: 2, customUnit: CustomUnit.weeks);
+    case 30:
+      return (choice: RepeatChoice.monthly, customN: 1, customUnit: CustomUnit.months);
+  }
+  if (intervalDays % 30 == 0) {
+    return (choice: RepeatChoice.custom, customN: intervalDays ~/ 30, customUnit: CustomUnit.months);
+  }
+  if (intervalDays % 7 == 0) {
+    return (choice: RepeatChoice.custom, customN: intervalDays ~/ 7, customUnit: CustomUnit.weeks);
+  }
+  return (choice: RepeatChoice.custom, customN: intervalDays, customUnit: CustomUnit.days);
+}
