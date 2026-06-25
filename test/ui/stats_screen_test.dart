@@ -86,7 +86,9 @@ void main() {
   });
 
   testWidgets('renders a paper fill while providers are loading', (tester) async {
-    // Repository whose streams never emit -> providers stay loading.
+    // No override -> repositoryProvider builds but hits null auth uid, so
+    // userProvider/tasksProvider resolve to AsyncError. Either way .value is null;
+    // guard renders paper fill, no exception.
     await tester.pumpWidget(const ProviderScope(
       child: MaterialApp(home: StatsScreen()),
     ));
