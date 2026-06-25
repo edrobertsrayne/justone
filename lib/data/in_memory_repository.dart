@@ -14,6 +14,7 @@ class InMemoryRepository implements Repository {
 
   UserState _user;
   List<Task> _tasks;
+  int _idSeq = 0;
   final _userCtrl = StreamController<UserState>.broadcast();
   final _tasksCtrl = StreamController<List<Task>>.broadcast();
 
@@ -51,6 +52,9 @@ class InMemoryRepository implements Repository {
     _userCtrl.close();
     _tasksCtrl.close();
   }
+
+  @override
+  String newTaskId() => 'gen-${_idSeq++}';
 
   /// A realistic pool for running the app by hand. At least one task is due so
   /// the app opens on `daily`. Tests construct [InMemoryRepository] directly.

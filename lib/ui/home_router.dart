@@ -6,19 +6,17 @@ import '../app/providers.dart';
 import '../domain/routing.dart';
 import '../domain/selection.dart';
 import '../theme/palette.dart';
+import 'add_sheet.dart';
 import 'cleared_screen.dart';
 import 'daily_screen.dart';
 import 'empty_pool_screen.dart';
-import 'placeholder_screen.dart';
+import 'manage_screen.dart';
+import 'onboarding_flow.dart';
 import 'target_hit_screen.dart';
 
 /// Derives the current screen purely from routeHome and renders it.
 class HomeRouter extends ConsumerWidget {
   const HomeRouter({super.key});
-
-  void _open(BuildContext context, String title) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => PlaceholderScreen(title: title)));
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,12 +32,14 @@ class HomeRouter extends ConsumerWidget {
 
     final screen = routeHome(user, tasks, now);
     final child = switch (screen) {
+      AppScreen.onboardTarget => const OnboardingFlow(),
       AppScreen.daily => DailyScreen(user: user, task: selectTask(tasks, now)!),
-      AppScreen.cleared => ClearedScreen(onReviewPool: () => _open(context, 'Manage')),
-      AppScreen.emptyPool => EmptyPoolScreen(onAdd: () => _open(context, 'Add')),
+      AppScreen.cleared => ClearedScreen(
+          onReviewPool: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ManageScreen()))),
+      AppScreen.emptyPool => EmptyPoolScreen(onAdd: () => showAddSheet(context, ref)),
       AppScreen.targetHit =>
         TargetHitScreen(user: user, onKeepGoing: () => ref.read(dailyControllerProvider).keepGoing(user)),
-      // welcome/onboard*/add/manage/settings/stats are not reachable from the
+      // welcome/add/manage/settings/stats are not reachable from the
       // Phase-2 home loop (auth + those screens arrive later).
       _ => const ColoredBox(color: Palette.paper, child: SizedBox.expand()),
     };

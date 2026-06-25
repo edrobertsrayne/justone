@@ -15,4 +15,8 @@ abstract class Repository {
   /// Release resources (Firestore listeners / stream controllers). Called when
   /// the repository is replaced (e.g. sign-out) or the app shuts down.
   void dispose();
+
+  /// Allocate a new, unique task id. Firestore uses a client-side auto-id;
+  /// the in-memory fake uses a counter.
+  String newTaskId();
 }

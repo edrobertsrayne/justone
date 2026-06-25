@@ -18,7 +18,7 @@ void main() {
     final auth = MockFirebaseAuth(signedIn: true, mockUser: MockUser(uid: 'u1'));
     final db = FakeFirebaseFirestore();
     await db.doc('users/u1').set(userToFirestore(
-      UserState(timezone: 'UTC', target: 3, lastActiveDate: DateTime(2026, 6, 24)),
+      UserState(timezone: 'UTC', target: 3, lastActiveDate: DateTime(2026, 6, 24), onboardingComplete: true),
     ));
     await db.collection('users/u1/tasks').doc('t1').set(taskToFirestore(
       Task(id: 't1', title: 'Reply to landlord', kind: TaskKind.oneOff, dueAt: DateTime(2026, 6, 22), createdAt: DateTime(2026, 6, 1)),

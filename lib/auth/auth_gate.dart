@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app/daily_reset_scope.dart';
 import '../theme/palette.dart';
 import '../ui/home_router.dart';
-import '../ui/sign_in_screen.dart';
+import '../ui/welcome_screen.dart';
 import 'auth_providers.dart';
 import 'bootstrap.dart';
 
-/// Top-level gate: signed-out -> SignInScreen; signed-in -> bootstrap -> app.
+/// Top-level gate: signed-out -> WelcomeScreen; signed-in -> bootstrap -> app.
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
 
@@ -16,9 +16,9 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(authProvider).when(
           loading: () => const _Splash(),
-          error: (_, __) => const SignInScreen(),
+          error: (_, __) => const WelcomeScreen(),
           data: (user) {
-            if (user == null) return const SignInScreen();
+            if (user == null) return const WelcomeScreen();
             return ref.watch(bootstrapProvider).when(
                   loading: () => const _Splash(),
                   // Bootstrap only fails offline on a brand-new account; network is

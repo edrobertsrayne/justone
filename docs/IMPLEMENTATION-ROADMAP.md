@@ -18,7 +18,7 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 | 1 | **Domain core + design system** | Pure-Dart immutable models (`Task`, `UserState`), the urgency curve + `meta` derivation, the selection engine (highest-urg active task), the screen-routing pure function, and the state-transition functions (complete / skip / remove / daily-reset) returning intended writes. Plus the design system: colour tokens, halo colour interpolation, the major-second type scale, `Newsreader`/`Nunito Sans` text styles, `ThemeData`. **No Firebase, no UI. Fully TDD.** | **✅ Complete** (merged to `main`, 48 tests green) |
 | 2 | **Daily-loop UI** | The daily card (swipe-right Done, swipe-left Skip, long-press Remove, finger-following physics, hint labels, halo), plus `cleared` / `emptyPool` / `targetHit` screens and toasts. Driven by the Phase-1 engine against an **in-memory fake repository** (no Firebase yet). | **✅ Complete** (merged to `main`, 78 tests green) |
 | 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | **✅ Complete** (merged to `main`, 101 tests green) |
-| 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | Not started |
+| 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | **✅ Complete** (150 tests green) |
 | 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | Not started |
 | 6 | **Notifications** | Cloud Function (TypeScript, Functions v2, `onSchedule("every 15 minutes")`, D16) scanning user docs and sending FCM per timezone/reminder window with idempotency + escalation (D3/D5/D17); FCM token registration in a `devices` subcollection (D4); runtime permission flow at end of onboarding with a settings re-enable path (D14); notification-type payloads (D15). | Not started |
 
@@ -86,6 +86,25 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
   deploy/device run:** run the manual rules check, and do the one-time manual device smoke
   (`firebase emulators:start` → `tool/seed_emulator.dart` → `flutter run` → verify daily card,
   complete/skip/remove writes land, and the reset fires on resume past local midnight).
+
+## Decisions captured during Phase-4 (2026-06-25)
+
+- **Single `saveTask` builder, not `addTask`/`editTask`:** add and edit share one pure builder in
+  `lib/domain/edits.dart` (DRY) — edit passes through the existing `id`/`status`/`createdAt`/
+  `completedAt`, add seeds fresh ones via `newTaskId()`.
+- **`newTaskId()` is the only `Repository` seam addition this phase:** client-side id allocation for
+  new pool tasks, implemented identically on `InMemoryRepository` and `FirestoreRepository`; no other
+  interface changes were needed.
+- **This/Next-week deadline chips = `+7`/`+14` days** from `now`, via the same DST-safe
+  year/month/day constructor as the other `dueAtFor` cases.
+- **Reminders are fully editable in Settings (D17)** — not just the initial onboarding choice; the
+  settings screen reads/writes the same weekday + time-of-day arrays as onboarding.
+- **Phase-3 carry-overs closed:** the designed welcome screen landed; `GoogleSignInException`
+  cancel-handling moved behind `AuthService`; `signOut()` now guards on `_initialized` before calling
+  `GoogleSignIn.signOut()`.
+- **`ManageScreen` filters active/benched itself:** `InMemoryRepository.watchTasks` does not
+  status-filter (unlike `FirestoreRepository`, which filters archived/removed at the query level), so
+  the screen applies its own active/benched split to keep both repositories visually consistent.
 
 ## Still genuinely open (from research §11 / backend "still open")
 

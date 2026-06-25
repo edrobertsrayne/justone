@@ -7,6 +7,8 @@ import '../domain/task.dart';
 import '../domain/urgency.dart';
 import '../domain/user_state.dart';
 import '../theme/palette.dart';
+import 'add_sheet.dart';
+import 'manage_screen.dart';
 import 'placeholder_screen.dart';
 import 'swipe_card.dart';
 
@@ -36,7 +38,9 @@ class DailyScreen extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _ChromeButton(icon: Icons.menu, onTap: () => _open(context, 'Manage')),
+                      _ChromeButton(
+                          icon: Icons.menu,
+                          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ManageScreen()))),
                       const Text('TODAY',
                           style: TextStyle(
                               fontFamily: 'Nunito Sans',
@@ -66,7 +70,7 @@ class DailyScreen extends ConsumerWidget {
               bottom: 30,
               child: GestureDetector(
                 key: const ValueKey('daily-fab'),
-                onTap: () => _open(context, 'Add'),
+                onTap: () => showAddSheet(context, ref),
                 child: Container(
                   width: 56,
                   height: 56,

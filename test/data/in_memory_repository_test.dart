@@ -72,4 +72,15 @@ void main() {
       throwsStateError,
     );
   });
+
+  test('newTaskId returns distinct ids', () {
+    final repo = InMemoryRepository(
+      user: UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 24)),
+      tasks: const [],
+    );
+    final a = repo.newTaskId();
+    final b = repo.newTaskId();
+    expect(a, isNotEmpty);
+    expect(a, isNot(b));
+  });
 }

@@ -55,4 +55,11 @@ void main() {
     // increment(1) applied on top of 100 -> 101 (absolute would have written 11).
     expect((await db.doc('users/u1').get()).data()!['lifetimeDone'], 101);
   });
+
+  test('newTaskId returns distinct non-empty ids', () {
+    final db = FakeFirebaseFirestore();
+    final repo = FirestoreRepository(db, 'u1');
+    expect(repo.newTaskId(), isNotEmpty);
+    expect(repo.newTaskId(), isNot(repo.newTaskId()));
+  });
 }
