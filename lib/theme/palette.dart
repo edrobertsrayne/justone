@@ -9,6 +9,11 @@ abstract final class Palette {
   static const Color accent = Color(0xFF5F8C63);
   static const Color terracotta = Color(0xFFC2683F);
   static const Color iconCream = Color(0xFFEFEAE0);
+
+  // Stats screen — the one deliberately loud surface (HANDOFF §7).
+  static const Color statsHero = Color(0xFF2F4233);
+  static const Color statsGold = Color(0xFFE8C98F);
+  static const Color statsAccent = Color(0xFF3A5240);
 }
 
 const Color _haloCalm = Color.fromARGB(255, 95, 140, 99);
