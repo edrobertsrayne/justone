@@ -18,7 +18,7 @@ DateTime? dueAtFor(DeadlineChoice choice, DateTime now, {DateTime? pickedDate}) 
     DeadlineChoice.thisWeek => plus(7),
     DeadlineChoice.nextWeek => plus(14),
     DeadlineChoice.pickDate =>
-      DateTime(pickedDate!.year, pickedDate!.month, pickedDate!.day),
+      DateTime(pickedDate!.year, pickedDate.month, pickedDate.day),
   };
 }
 

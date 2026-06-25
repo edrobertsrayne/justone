@@ -25,3 +25,10 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
   the provider mid-load, so the future never completes and the test times out. Establish a listener
   first — `container.listen(provider, (_, __) {})` (close it in `addTearDown`) — before awaiting
   `.future`. Widget tests don't hit this: the widget tree keeps the providers alive.
+
+- **UI reading a `StreamProvider` (`userProvider`) inside a callback / bottom sheet:** the widget
+  must establish an active listener before `ref.read(provider).value` — otherwise `.value` is null
+  and the action silently no-ops. For a modal bottom sheet, make it a `ConsumerStatefulWidget` so it
+  owns its own `ref` and does `ref.watch(userProvider)` in `build`. Don't thread a borrowed
+  `WidgetRef` from the caller into a plain `StatefulWidget` and call `listenManual` on it — that
+  subscription is tied to the *caller's* element, not the sheet's, so it leaks on every open.

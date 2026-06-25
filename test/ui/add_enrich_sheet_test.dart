@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:justone/app/providers.dart';
 import 'package:justone/data/in_memory_repository.dart';
-import 'package:justone/domain/task.dart';
 import 'package:justone/domain/user_state.dart';
 import 'package:justone/ui/add_sheet.dart';
 
