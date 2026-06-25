@@ -42,4 +42,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Your pool'), findsOneWidget);
   });
+
+  testWidgets('stats button opens the stats screen', (tester) async {
+    await tester.pumpWidget(_app());
+    await tester.tap(find.byIcon(Icons.bar_chart));
+    await tester.pumpAndSettle();
+    expect(find.text('Your stats'), findsOneWidget);
+  });
 }

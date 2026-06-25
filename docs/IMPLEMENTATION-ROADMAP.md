@@ -19,7 +19,7 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 | 2 | **Daily-loop UI** | The daily card (swipe-right Done, swipe-left Skip, long-press Remove, finger-following physics, hint labels, halo), plus `cleared` / `emptyPool` / `targetHit` screens and toasts. Driven by the Phase-1 engine against an **in-memory fake repository** (no Firebase yet). | **✅ Complete** (merged to `main`, 78 tests green) |
 | 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | **✅ Complete** (merged to `main`, 101 tests green) |
 | 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | **✅ Complete** (150 tests green) |
-| 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | Not started |
+| 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | **✅ Complete** (154 tests green) |
 | 6 | **Notifications** | Cloud Function (TypeScript, Functions v2, `onSchedule("every 15 minutes")`, D16) scanning user docs and sending FCM per timezone/reminder window with idempotency + escalation (D3/D5/D17); FCM token registration in a `devices` subcollection (D4); runtime permission flow at end of onboarding with a settings re-enable path (D14); notification-type payloads (D15). | Not started |
 
 ## Decisions captured during Phase-1 brainstorm (2026-06-22/23)
@@ -105,6 +105,19 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 - **`ManageScreen` filters active/benched itself:** `InMemoryRepository.watchTasks` does not
   status-filter (unlike `FirestoreRepository`, which filters archived/removed at the query level), so
   the screen applies its own active/benched split to keep both repositories visually consistent.
+
+## Decisions captured during Phase-5 (2026-06-25)
+
+- **Stats is a pushed route, not a `routeHome` screen:** reached via the daily bar-chart button as a
+  `MaterialPageRoute` (same pattern as manage/settings). `AppScreen.stats` stays unreferenced by the
+  router, consistent with manage/settings.
+- **`poolCount` excludes archived + removed** (active + benched), matching the prototype and
+  `routeHome`'s pool-empty definition — derived from `tasksProvider`, not stored.
+- **Built static, matching the prototype.** **Deferred follow-up:** revisit a gentle entrance
+  animation for the stats hero (streak count-up or hero fade/scale-in), evaluated on-device — the
+  handoff calls this "the one loud moment" but the prototype markup carries the weight through
+  composition, not motion.
+- **`PlaceholderScreen` removed** — the stats button was its last caller.
 
 ## Still genuinely open (from research §11 / backend "still open")
 

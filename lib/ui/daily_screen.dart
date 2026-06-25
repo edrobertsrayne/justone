@@ -9,7 +9,7 @@ import '../domain/user_state.dart';
 import '../theme/palette.dart';
 import 'add_sheet.dart';
 import 'manage_screen.dart';
-import 'placeholder_screen.dart';
+import 'stats_screen.dart';
 import 'swipe_card.dart';
 
 class DailyScreen extends ConsumerWidget {
@@ -17,10 +17,6 @@ class DailyScreen extends ConsumerWidget {
 
   final UserState user;
   final Task task;
-
-  void _open(BuildContext context, String title) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => PlaceholderScreen(title: title)));
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +44,10 @@ class DailyScreen extends ConsumerWidget {
                               fontSize: 9.8,
                               letterSpacing: 1.96,
                               color: Color(0xFFC2BCAE))),
-                      _ChromeButton(icon: Icons.bar_chart, onTap: () => _open(context, 'Stats')),
+                      _ChromeButton(
+                          icon: Icons.bar_chart,
+                          onTap: () => Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (_) => const StatsScreen()))),
                     ],
                   ),
                 ),

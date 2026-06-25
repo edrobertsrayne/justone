@@ -23,4 +23,10 @@ void main() {
     expect(haloColor(-1), haloColor(0));
     expect(haloColor(2), haloColor(1));
   });
+
+  test('stats-surface tokens use the exact spec hex values', () {
+    expect(Palette.statsHero, const Color(0xFF2F4233));
+    expect(Palette.statsGold, const Color(0xFFE8C98F));
+    expect(Palette.statsAccent, const Color(0xFF3A5240));
+  });
 }
