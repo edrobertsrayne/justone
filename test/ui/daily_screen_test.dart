@@ -6,7 +6,6 @@ import 'package:justone/data/in_memory_repository.dart';
 import 'package:justone/domain/task.dart';
 import 'package:justone/domain/user_state.dart';
 import 'package:justone/ui/daily_screen.dart';
-import 'package:justone/ui/placeholder_screen.dart';
 import 'package:justone/ui/swipe_card.dart';
 
 UserState _user() => UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 23), rerolls: 3);
@@ -30,11 +29,17 @@ void main() {
     expect(find.text('Water the plants'), findsOneWidget);
   });
 
-  testWidgets('the FAB opens the add placeholder', (tester) async {
+  testWidgets('the FAB opens the add sheet', (tester) async {
     await tester.pumpWidget(_app());
     await tester.tap(find.byKey(const ValueKey('daily-fab')));
     await tester.pumpAndSettle();
-    expect(find.byType(PlaceholderScreen), findsOneWidget);
-    expect(find.textContaining('Add'), findsWidgets);
+    expect(find.text('NEW CHORE'), findsOneWidget);
+  });
+
+  testWidgets('menu button opens the manage screen', (tester) async {
+    await tester.pumpWidget(_app());
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+    expect(find.text('Your pool'), findsOneWidget);
   });
 }
