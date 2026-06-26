@@ -9,8 +9,11 @@ import 'package:justone/auth/bootstrap.dart';
 import 'package:justone/data/in_memory_repository.dart';
 import 'package:justone/domain/task.dart';
 import 'package:justone/domain/user_state.dart';
+import 'package:justone/notifications/messaging_service.dart';
 import 'package:justone/ui/home_router.dart';
 import 'package:justone/ui/welcome_screen.dart';
+
+import '../support/fake_messaging_service.dart';
 
 void main() {
   testWidgets('shows the welcome screen when signed out', (tester) async {
@@ -34,6 +37,9 @@ void main() {
         repositoryProvider.overrideWithValue(repo),
         nowProvider.overrideWithValue(() => DateTime(2026, 6, 24, 9)),
         bootstrapProvider.overrideWith((ref) async {}), // skip the flutter_timezone plugin call
+        // NotificationScope now lives in the signed-in subtree; prevent the real
+        // FirebaseMessagingService from being constructed (Firebase not initialised in tests).
+        messagingServiceProvider.overrideWithValue(FakeMessagingService()),
       ],
       child: const MaterialApp(home: AuthGate()),
     ));
