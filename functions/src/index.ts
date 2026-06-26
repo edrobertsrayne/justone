@@ -1,32 +1,48 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-import {setGlobalOptions} from "firebase-functions";
-import {onRequest} from "firebase-functions/https";
+import { setGlobalOptions } from "firebase-functions";
 import * as logger from "firebase-functions/logger";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+import { UserDoc } from "./fields";
+import { runScan, ScanDeps, SendResult } from "./scan";
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
+initializeApp();
 setGlobalOptions({ maxInstances: 10 });
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Every 15 minutes: nudge users whose streak isn't secured (D3/D16).
+export const sendReminders = onSchedule("every 15 minutes", async () => {
+  const db = getFirestore();
+  const messaging = getMessaging();
+
+  const deps: ScanDeps = {
+    async listUsers() {
+      const snap = await db.collection("users").get();
+      return snap.docs.map((d) => ({ uid: d.id, user: d.data() as UserDoc }));
+    },
+    async listDeviceTokens(uid) {
+      const snap = await db.collection(`users/${uid}/devices`).get();
+      return snap.docs.map((d) => d.data().token as string).filter(Boolean);
+    },
+    async send(token, copy): Promise<SendResult> {
+      try {
+        await messaging.send({ token, notification: copy });
+        return "ok";
+      } catch (e: any) {
+        const code = e?.errorInfo?.code ?? e?.code;
+        if (code === "messaging/registration-token-not-registered") return "invalid-token";
+        logger.error("FCM send failed", { code });
+        return "error";
+      }
+    },
+    async deleteDevice(uid, token) {
+      await db.doc(`users/${uid}/devices/${token}`).delete();
+    },
+    async setLastNotified(uid, value) {
+      await db.doc(`users/${uid}`).set({ lastNotified: value }, { merge: true });
+    },
+  };
+
+  await runScan(deps, new Date());
+});
