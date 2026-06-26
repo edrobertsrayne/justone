@@ -5,6 +5,8 @@ import '../app/providers.dart';
 import '../app/settings_controller.dart';
 import '../auth/auth_providers.dart';
 import '../domain/user_state.dart';
+import '../notifications/messaging_service.dart';
+import '../notifications/registration_controller.dart';
 import '../theme/palette.dart';
 import '../theme/type_scale.dart';
 import 'widgets/target_stepper.dart';
@@ -38,6 +40,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = ref.watch(userProvider).value;
     if (user == null) return const Scaffold(backgroundColor: Palette.paper, body: SizedBox.expand());
     final list = _activeList(user);
+    final perm = ref.watch(notifPermissionProvider).value;
 
     return Scaffold(
       backgroundColor: Palette.paper,
@@ -57,6 +60,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(22, 8, 22, 30),
                 children: [
+                  if (perm != null && perm != NotifPermission.granted) ...[
+                    _reEnableCard(),
+                    const SizedBox(height: 12),
+                  ],
                   _card(Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text('Daily target', style: TypeScale.serif(15.8, weight: FontWeight.w500, color: Palette.ink)),
@@ -143,6 +150,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ])),
     );
   }
+
+  Widget _reEnableCard() => GestureDetector(
+        key: const ValueKey('reenable-reminders'),
+        onTap: () async {
+          await ref.read(registrationControllerProvider).requestAndRegister();
+          ref.invalidate(notifPermissionProvider);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 15),
+          decoration: BoxDecoration(
+            color: Palette.accent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(children: [
+            const Icon(Icons.notifications_off_outlined, size: 20, color: Color(0xFFFBF9F4)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Reminders are off',
+                    style: TypeScale.sans(14, weight: FontWeight.w700, color: const Color(0xFFFBF9F4))),
+                const SizedBox(height: 3),
+                Text('Tap to turn them on. If nothing happens, enable notifications for Just One in system settings.',
+                    style: TypeScale.sans(11.1, height: 1.4, color: const Color(0xFFEDEFE8))),
+              ]),
+            ),
+          ]),
+        ),
+      );
 
   Widget _card(Widget child) => Container(
         margin: const EdgeInsets.only(bottom: 9),

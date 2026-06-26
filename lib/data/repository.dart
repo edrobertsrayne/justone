@@ -19,4 +19,12 @@ abstract class Repository {
   /// Allocate a new, unique task id. Firestore uses a client-side auto-id;
   /// the in-memory fake uses a counter.
   String newTaskId();
+
+  /// Upsert this device's FCM token into `users/{uid}/devices/{token}` (D4).
+  /// Doc id is the token itself; dead tokens are pruned server-side.
+  Future<void> upsertDevice({
+    required String token,
+    required String platform,
+    required DateTime now,
+  });
 }

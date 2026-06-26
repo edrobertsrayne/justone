@@ -9,7 +9,10 @@ import 'package:justone/data/firestore_mappers.dart';
 import 'package:justone/domain/task.dart';
 import 'package:justone/domain/user_state.dart';
 import 'package:justone/main.dart';
+import 'package:justone/notifications/messaging_service.dart';
 import 'package:justone/ui/home_router.dart';
+
+import 'support/fake_messaging_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +33,9 @@ void main() {
         firestoreProvider.overrideWithValue(db),
         nowProvider.overrideWithValue(() => DateTime(2026, 6, 24, 9)),
         bootstrapProvider.overrideWith((ref) async {}),
+        // NotificationScope now lives in the signed-in subtree; prevent the real
+        // FirebaseMessagingService from being constructed (Firebase not initialised in tests).
+        messagingServiceProvider.overrideWithValue(FakeMessagingService()),
       ],
       child: const JustOneApp(),
     ));

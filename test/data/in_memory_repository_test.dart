@@ -83,4 +83,14 @@ void main() {
     expect(a, isNotEmpty);
     expect(a, isNot(b));
   });
+
+  test('upsertDevice records the upsert for assertions', () async {
+    final repo = InMemoryRepository(
+      user: UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 26)),
+      tasks: const [],
+    );
+    await repo.upsertDevice(token: 'tok-1', platform: 'android', now: DateTime(2026, 6, 26, 8));
+    expect(repo.deviceUpserts.single.token, 'tok-1');
+    expect(repo.deviceUpserts.single.platform, 'android');
+  });
 }

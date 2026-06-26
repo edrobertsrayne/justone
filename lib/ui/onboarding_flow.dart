@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/onboarding_controller.dart';
 import '../app/providers.dart';
+import '../notifications/registration_controller.dart';
 import '../theme/palette.dart';
 import '../theme/type_scale.dart';
 import 'widgets/target_stepper.dart';
@@ -56,7 +57,11 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
-          child: _step == 0 ? _buildTarget() : _buildAdd(),
+          child: switch (_step) {
+            0 => _buildTarget(),
+            1 => _buildAdd(),
+            _ => _buildRationale(),
+          },
         ),
       ),
     );
@@ -65,7 +70,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
   Widget _buildTarget() {
     return Column(
       children: [
-        _eyebrow('Step 1 of 2'),
+        _eyebrow('Step 1 of 3'),
         const Spacer(),
         Text('DAILY TARGET',
             style: TypeScale.sans(11.1, weight: FontWeight.w700, letterSpacing: 2.4, color: Palette.accent)),
@@ -97,7 +102,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
             child: const Icon(Icons.chevron_left, color: Color(0xFF6F6A60)),
           ),
           const Spacer(),
-          _eyebrow('Step 2 of 2'),
+          _eyebrow('Step 2 of 3'),
           const Spacer(),
           const SizedBox(width: 24),
         ]),
@@ -156,7 +161,57 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
             ],
           ),
         ),
-        _primary('Start Just One', _titles.isEmpty || _submitting ? null : _finish),
+        _primary('Start Just One', _titles.isEmpty || _submitting ? null : () => setState(() => _step = 2)),
+      ],
+    );
+  }
+
+  Future<void> _enableThenFinish() async {
+    if (_submitting) return;
+    await ref.read(registrationControllerProvider).requestAndRegister();
+    await _finish();
+  }
+
+  Widget _buildRationale() {
+    return Column(
+      children: [
+        Row(children: [
+          GestureDetector(
+            onTap: () => setState(() => _step = 1),
+            child: const Icon(Icons.chevron_left, color: Color(0xFF6F6A60)),
+          ),
+          const Spacer(),
+          _eyebrow('Last step'),
+          const Spacer(),
+          const SizedBox(width: 24),
+        ]),
+        const Spacer(),
+        Text('STAY ON TRACK',
+            style: TypeScale.sans(11.1, weight: FontWeight.w700, letterSpacing: 2.4, color: Palette.accent)),
+        const SizedBox(height: 14),
+        Text('A gentle nudge, never a nag.',
+            textAlign: TextAlign.center,
+            style: TypeScale.serif(28.4, weight: FontWeight.w500, color: Palette.ink)),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: 250,
+          child: Text(
+            "Reminders are the whole point — a quiet beat so today doesn't slip. Change or silence them anytime in settings.",
+            textAlign: TextAlign.center,
+            style: TypeScale.sans(14, height: 1.55, color: Palette.muted),
+          ),
+        ),
+        const Spacer(),
+        _primary('Turn on reminders', _submitting ? null : _enableThenFinish),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: _submitting ? null : _finish,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text('Not now',
+                style: TypeScale.sans(13, weight: FontWeight.w700, color: const Color(0xFF8A847A))),
+          ),
+        ),
       ],
     );
   }

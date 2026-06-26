@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/daily_reset_scope.dart';
+import '../notifications/notification_scope.dart';
 import '../theme/palette.dart';
 import '../ui/home_router.dart';
 import '../ui/welcome_screen.dart';
@@ -25,7 +26,9 @@ class AuthGate extends ConsumerWidget {
                   // present right after Google sign-in (spec §C). Show the splash;
                   // it retries when the provider is re-read.
                   error: (_, __) => const _Splash(),
-                  data: (_) => const DailyResetScope(child: HomeRouter()),
+                  data: (_) => const DailyResetScope(
+                    child: NotificationScope(child: HomeRouter()),
+                  ),
                 );
           },
         );

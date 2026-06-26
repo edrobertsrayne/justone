@@ -1,33 +1,14 @@
 module.exports = {
   root: true,
-  env: {
-    es6: true,
-    node: true,
-  },
-  extends: [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "google",
-    "plugin:@typescript-eslint/recommended",
-  ],
+  env: { es6: true, node: true },
   parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
-    sourceType: "module",
-  },
-  ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
-  ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
+  parserOptions: { ecmaVersion: 2020, sourceType: "module" },
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  plugins: ["@typescript-eslint", "import"],
+  ignorePatterns: ["lib/**", "node_modules/**", "*.test.ts", "jest.config.js", ".eslintrc.js"],
   rules: {
     "quotes": ["error", "double"],
-    "import/no-unresolved": 0,
-    "indent": ["error", 2],
+    "max-len": ["error", { code: 110 }],
+    "@typescript-eslint/no-explicit-any": "off",
   },
 };

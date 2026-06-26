@@ -67,4 +67,15 @@ class FirestoreRepository implements Repository {
 
   @override
   String newTaskId() => _tasksRef.doc().id;
+
+  @override
+  Future<void> upsertDevice({
+    required String token,
+    required String platform,
+    required DateTime now,
+  }) =>
+      _db.doc('users/$_uid/devices/$token').set(
+            deviceToFirestore(token: token, platform: platform, now: now),
+            SetOptions(merge: true),
+          );
 }
