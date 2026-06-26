@@ -70,7 +70,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
   Widget _buildTarget() {
     return Column(
       children: [
-        _eyebrow('Step 1 of 2'),
+        _eyebrow('Step 1 of 3'),
         const Spacer(),
         Text('DAILY TARGET',
             style: TypeScale.sans(11.1, weight: FontWeight.w700, letterSpacing: 2.4, color: Palette.accent)),
@@ -102,7 +102,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
             child: const Icon(Icons.chevron_left, color: Color(0xFF6F6A60)),
           ),
           const Spacer(),
-          _eyebrow('Step 2 of 2'),
+          _eyebrow('Step 2 of 3'),
           const Spacer(),
           const SizedBox(width: 24),
         ]),
