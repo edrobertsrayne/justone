@@ -27,4 +27,12 @@ describe("localParts", () => {
     expect(lp.date).toBe("2026-06-27");
     expect(lp.minutes).toBe(8 * 60 + 30);
   });
+
+  it("uses UTC+0 for London in winter (no BST)", () => {
+    // 2026-01-15 12:00 UTC -> 12:00 local (London is UTC+0 in winter, no DST offset).
+    const lp = localParts("Europe/London", new Date("2026-01-15T12:00:00Z"));
+    expect(lp.date).toBe("2026-01-15");
+    expect(lp.minutes).toBe(720); // 12 * 60
+    expect(lp.isWeekend).toBe(false); // Thursday
+  });
 });

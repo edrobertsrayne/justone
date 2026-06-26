@@ -57,4 +57,30 @@ describe("runScan", () => {
     expect(calls.deleted).toEqual([{ uid: "a", token: "tok-1" }]);
     expect(calls.lastNotified).toHaveLength(0);
   });
+
+  it("skips a bad user and still delivers to the next user", async () => {
+    const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const badUser: UserDoc = { ...u, timezone: "Not/AZone" };
+    const { d, calls } = deps({
+      users: [
+        { uid: "bad", user: badUser },
+        { uid: "good", user: u },
+      ],
+    });
+    await runScan(d, now);
+    expect(calls.sent.some((s) => s.token === "tok-1")).toBe(true);
+    expect(calls.lastNotified.some((n) => n.uid === "good")).toBe(true);
+    expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("bad"), expect.anything());
+    errSpy.mockRestore();
+  });
+
+  it("does not delete device or setLastNotified when send returns error", async () => {
+    const { d, calls } = deps({
+      users: [{ uid: "a", user: u }],
+      send: async (): Promise<SendResult> => "error",
+    });
+    await runScan(d, now);
+    expect(calls.deleted).toHaveLength(0);
+    expect(calls.lastNotified).toHaveLength(0);
+  });
 });

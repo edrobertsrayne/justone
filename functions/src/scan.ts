@@ -18,22 +18,26 @@ export interface ScanDeps {
 export async function runScan(deps: ScanDeps, now: Date): Promise<void> {
   const users = await deps.listUsers();
   for (const { uid, user } of users) {
-    const decision = decideNotification(user, now);
-    if (!decision.send) continue;
+    try {
+      const decision = decideNotification(user, now);
+      if (!decision.send) continue;
 
-    const tokens = await deps.listDeviceTokens(uid);
-    let delivered = false;
-    for (const token of tokens) {
-      const result = await deps.send(token, { title: decision.title, body: decision.body });
-      if (result === "ok") delivered = true;
-      else if (result === "invalid-token") await deps.deleteDevice(uid, token);
-    }
+      const tokens = await deps.listDeviceTokens(uid);
+      let delivered = false;
+      for (const token of tokens) {
+        const result = await deps.send(token, { title: decision.title, body: decision.body });
+        if (result === "ok") delivered = true;
+        else if (result === "invalid-token") await deps.deleteDevice(uid, token);
+      }
 
-    if (delivered) {
-      await deps.setLastNotified(uid, {
-        date: localParts(user.timezone, now).date,
-        count: decision.count,
-      });
+      if (delivered) {
+        await deps.setLastNotified(uid, {
+          date: localParts(user.timezone, now).date,
+          count: decision.count,
+        });
+      }
+    } catch (e) {
+      console.error(`scan: user ${uid} failed`, e);
     }
   }
 }
