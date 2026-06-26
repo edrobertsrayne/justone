@@ -17,6 +17,7 @@ class InMemoryRepository implements Repository {
   int _idSeq = 0;
   final _userCtrl = StreamController<UserState>.broadcast();
   final _tasksCtrl = StreamController<List<Task>>.broadcast();
+  final List<({String token, String platform, DateTime now})> deviceUpserts = [];
 
   @override
   Stream<UserState> watchUser() async* {
@@ -55,6 +56,15 @@ class InMemoryRepository implements Repository {
 
   @override
   String newTaskId() => 'gen-${_idSeq++}';
+
+  @override
+  Future<void> upsertDevice({
+    required String token,
+    required String platform,
+    required DateTime now,
+  }) async {
+    deviceUpserts.add((token: token, platform: platform, now: now));
+  }
 
   /// A realistic pool for running the app by hand. At least one task is due so
   /// the app opens on `daily`. Tests construct [InMemoryRepository] directly.

@@ -62,4 +62,13 @@ void main() {
     expect(repo.newTaskId(), isNotEmpty);
     expect(repo.newTaskId(), isNot(repo.newTaskId()));
   });
+
+  test('upsertDevice writes a device doc keyed by token', () async {
+    final db = FakeFirebaseFirestore();
+    final repo = FirestoreRepository(db, 'u1');
+    await repo.upsertDevice(token: 'tok-1', platform: 'android', now: DateTime(2026, 6, 26, 8));
+    final snap = await db.doc('users/u1/devices/tok-1').get();
+    expect(snap.data()!['token'], 'tok-1');
+    expect(snap.data()!['platform'], 'android');
+  });
 }

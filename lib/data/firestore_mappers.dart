@@ -104,3 +104,15 @@ UserState userFromFirestore(Map<String, dynamic> data) {
     lastActiveDate: _dateFromString(data['lastActiveDate'] as String),
   );
 }
+
+// --- Device -> Firestore doc ---
+
+Map<String, dynamic> deviceToFirestore({
+  required String token,
+  required String platform,
+  required DateTime now,
+}) => {
+      'token': token,
+      'platform': platform,
+      'updatedAt': Timestamp.fromDate(now),
+    };
