@@ -52,4 +52,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(repo.deviceUpserts.map((d) => d.token), contains('tok-2'));
   });
+
+  testWidgets('does not upsert on token refresh when permission is denied', (tester) async {
+    final fake = FakeMessagingService(status: NotifPermission.denied);
+    addTearDown(fake.dispose);
+    final repo = await pump(tester, fake);
+    fake.emitRefresh('tok-x');
+    await tester.pumpAndSettle();
+    expect(repo.deviceUpserts, isEmpty);
+  });
 }

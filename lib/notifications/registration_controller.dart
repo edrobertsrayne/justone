@@ -40,6 +40,13 @@ class RegistrationController {
   Future<void> saveToken(String token) =>
       _repo.upsertDevice(token: token, platform: _platform, now: _now());
 
+  /// Upsert a refreshed token only if permission is currently granted.
+  Future<void> saveTokenIfGranted(String token) async {
+    if (await _messaging.permissionStatus() == NotifPermission.granted) {
+      await saveToken(token);
+    }
+  }
+
   Future<void> _saveCurrentToken() async {
     final token = await _messaging.getToken();
     if (token != null) await saveToken(token);

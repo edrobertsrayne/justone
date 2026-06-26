@@ -61,4 +61,20 @@ void main() {
     await _ctrl(repo, fake).saveToken('tok-refreshed');
     expect(repo.deviceUpserts.single.token, 'tok-refreshed');
   });
+
+  test('saveTokenIfGranted upserts when permission is granted', () async {
+    final repo = _repo();
+    final fake = FakeMessagingService(status: NotifPermission.granted, token: 'tok-1');
+    addTearDown(fake.dispose);
+    await _ctrl(repo, fake).saveTokenIfGranted('tok-granted');
+    expect(repo.deviceUpserts.single.token, 'tok-granted');
+  });
+
+  test('saveTokenIfGranted writes nothing when permission is denied', () async {
+    final repo = _repo();
+    final fake = FakeMessagingService(status: NotifPermission.denied);
+    addTearDown(fake.dispose);
+    await _ctrl(repo, fake).saveTokenIfGranted('tok-denied');
+    expect(repo.deviceUpserts, isEmpty);
+  });
 }

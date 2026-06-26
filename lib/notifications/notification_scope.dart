@@ -28,7 +28,7 @@ class _NotificationScopeState extends ConsumerState<NotificationScope> {
       ref.read(registrationControllerProvider).registerIfGranted();
     });
     _sub = ref.read(messagingServiceProvider).onTokenRefresh.listen(
-          (token) => ref.read(registrationControllerProvider).saveToken(token),
+          (token) => ref.read(registrationControllerProvider).saveTokenIfGranted(token),
         );
   }
 
