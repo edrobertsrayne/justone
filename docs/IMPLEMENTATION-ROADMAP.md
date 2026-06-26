@@ -20,7 +20,7 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
 | 3 | **Firebase wiring** | Google Sign-In, `users/{uid}` bootstrap on first sign-in (D13), Firestore `StreamProvider`s over user doc + tasks (D10), the real repository, complete-task `WriteBatch` (D11), client-authoritative daily reset on cold-start + resume (D7/D22), owner-isolation security rules (D12). Swap the fake repo for the real one. | **✅ Complete** (merged to `main`, 101 tests green) |
 | 4 | **Onboarding + add / manage / settings** | First-run wizard (`onboardTarget` + `onboardAdd` batch seed in one `WriteBatch`, D23), the `add`/edit screen (title, deadline, recurrence), the `manage` pool screen, and `settings` (target, reminder schedule per D17). First-run routing via `onboardingComplete` (D13). | **✅ Complete** (150 tests green) |
 | 5 | **Stats screen** | The streak hero — the one deliberately loud surface in the app. | **✅ Complete** (154 tests green) |
-| 6 | **Notifications** | Cloud Function (TypeScript, Functions v2, `onSchedule("every 15 minutes")`, D16) scanning user docs and sending FCM per timezone/reminder window with idempotency + escalation (D3/D5/D17); FCM token registration in a `devices` subcollection (D4); runtime permission flow at end of onboarding with a settings re-enable path (D14); notification-type payloads (D15). | Not started |
+| 6 | **Notifications** | Cloud Function (TypeScript, Functions v2, `onSchedule("every 15 minutes")`, D16) scanning user docs and sending FCM per timezone/reminder window with idempotency + escalation (D3/D5/D17); FCM token registration in a `devices` subcollection (D4); runtime permission flow at end of onboarding with a settings re-enable path (D14); notification-type payloads (D15). | **✅ Complete** (169 Flutter tests + 18 functions tests green) |
 
 ## Decisions captured during Phase-1 brainstorm (2026-06-22/23)
 
@@ -119,8 +119,29 @@ flutter_timezone), a configured `firebase_options.dart`, and untouched `firestor
   composition, not motion.
 - **`PlaceholderScreen` removed** — the stats button was its last caller.
 
+## Decisions captured during Phase-6 (2026-06-26)
+
+- **One spec, both halves** — client FCM plumbing + the Cloud Function shipped together.
+- **Tap just opens the app** — no deep-link/`data` routing; `routeHome` already lands on
+  daily/cleared. (Closes the "still open" deep-link item: v1 = none.)
+- **Catch-up jumps to the latest passed beat** — `decideNotification` sends only the most-
+  escalated passed reminder and covers the skipped ones (no backfill burst); a refinement of
+  D5's literal "next un-sent".
+- **Device doc id = the FCM token** — no local-id dependency; token rotation + the server's
+  dead-token cleanup self-heal transient duplicates.
+- **Streak-0 copy variant** — the final beat uses start-framing when there's no streak to lose.
+- **`MessagingService` seam** (mirrors `AuthService`) + one new `Repository.upsertDevice` —
+  the only seam additions; `firebase_messaging` never runs in `flutter test`.
+- **Functions switched to CommonJS** — dropped the scaffold's NodeNext/ESM for friction-free
+  jest + build; Functions v2 runs CJS fine.
+- **Server logic is pure** (`decideNotification` + `runScan` with injected `ScanDeps`) and
+  fully unit-tested; only the Admin-SDK wiring in `index.ts` is verified by build + the
+  documented manual device check (D18).
+- **Settings re-enable card does not open OS settings programmatically** — `firebase_messaging`
+  has no such API and we avoided a new dependency; the card re-prompts and, on permanent denial,
+  instructs the user to enable in system settings.
+
 ## Still genuinely open (from research §11 / backend "still open")
 
 - Final tuning of the urgency curve constants, reroll count (≈3), default reminder times, streak
   grace (none for v1).
-- Notification-tap deep-link routing specifics (Phase 6).
