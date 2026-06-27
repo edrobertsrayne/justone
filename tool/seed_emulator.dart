@@ -16,6 +16,7 @@ import 'package:flutter/widgets.dart';
 import 'package:justone/data/firestore_mappers.dart';
 import 'package:justone/data/in_memory_repository.dart';
 import 'package:justone/firebase_options.dart';
+import 'package:justone/main.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,4 +37,9 @@ Future<void> main() async {
   }
   // ignore: avoid_print
   print('Seeded emulator user: $uid (${tasks.length} tasks)');
+
+  // Mount the real app. The anonymous sign-in above is already live on
+  // FirebaseAuth.instance, so AuthGate -> bootstrap routes straight into the
+  // seeded daily loop. Without this the engine sits on a blank splash forever.
+  runApp(const ProviderScopedApp());
 }
