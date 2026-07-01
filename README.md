@@ -57,6 +57,61 @@ below).
 
 ---
 
+## Picking a device (`-d <device>`)
+
+Every `flutter run` below takes `-d <device>`. List what's attached with `flutter devices`. There
+are three kinds of target, with one Android-only catch.
+
+### Desktop / web — zero setup
+
+`-d linux` (or `-d chrome`) runs on your machine, where `localhost` already *is* the emulator host,
+so nothing extra is needed. This is the quickest smoke test.
+
+### Android (phone **or** emulator) — needs `adb reverse`
+
+The app points Firebase at `localhost:9099` / `:8080` (see "How the emulator wiring works" above).
+On Android, `localhost` is the *device's own* loopback — not your machine — so a tethered phone or
+an Android emulator can't reach the running Firebase emulator until you tunnel those two ports back
+over adb:
+
+```bash
+adb reverse tcp:9099 tcp:9099   # Auth
+adb reverse tcp:8080 tcp:8080   # Firestore
+```
+
+Run these once the device is connected, **and re-run them after any unplug/replug or emulator
+restart**. Without them an Android target just hangs on a blank screen trying to reach an emulator
+that isn't on the device.
+
+`adb` ships with the Android SDK platform-tools. If it's not on your PATH:
+
+```bash
+export PATH="$PATH:$HOME/Android/Sdk/platform-tools"   # add to ~/.zshrc to persist
+adb devices                                            # should list your target as "device"
+```
+
+**Emulated Android device:**
+
+1. Create/launch an AVD — Android Studio's Device Manager, or `flutter emulators --launch <id>`
+   (`flutter emulators` lists them).
+2. Run the two `adb reverse` commands above.
+3. `flutter run -t tool/seed_emulator.dart -d <emulator-id>` (or any of the run recipes below).
+
+**Tethered Android phone (e.g. a Pixel 8):**
+
+1. One-time on the phone: enable **Developer options** (Settings → About phone → tap **Build
+   number** 7×), then turn on **USB debugging** (Settings → System → Developer options).
+2. Plug in over USB and accept the **Allow USB debugging?** prompt on the phone (tick "always allow
+   from this computer"). `adb devices` / `flutter devices` should now list it.
+3. Run the two `adb reverse` commands above.
+4. `flutter run -t tool/seed_emulator.dart -d <phone-id>` (or any of the run recipes below).
+
+> For **real Google Sign-In and push notifications**, skip the emulator entirely and run against the
+> live project with `--dart-define=USE_EMULATOR=false` — see the limitation below. `adb reverse` is
+> not needed in that mode (there's no local emulator to reach).
+
+---
+
 ## Run it locally against the emulator
 
 ### 1. Start the emulators
@@ -69,6 +124,10 @@ firebase emulators:start
 
 This serves Auth (`:9099`), Firestore (`:8080`), and the Emulator UI at <http://localhost:4000>.
 Leave it running.
+
+**On an Android phone or emulator?** Also run the two `adb reverse` commands from
+[Picking a device](#picking-a-device--d-device) so the device can reach these ports. Desktop/web
+targets need nothing extra.
 
 ### 2. Seed a user and launch into the daily loop (recommended)
 
