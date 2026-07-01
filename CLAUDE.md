@@ -19,6 +19,16 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
 ## Learnings
 <!-- Append project-specific learnings below as they're discovered. -->
 
+- **Running the debug app against the Firebase emulator on Android needs cleartext HTTP.**
+  The Emulator Suite speaks plain HTTP and Android (API 28+) blocks cleartext by default, so
+  the first emulator network call throws `[firebase_auth/unknown] ... Cleartext HTTP traffic
+  to 10.0.2.2 not permitted`. In `tool/seed_emulator.dart` this throw is unhandled, kills
+  `main()` before `runApp`, and looks exactly like a hang. Plain `flutter run` hides it
+  because the signed-out WelcomeScreen never hits the emulator. Fix: `<application
+  android:usesCleartextTraffic="true" />` in `android/app/src/debug/AndroidManifest.xml`
+  (debug-only, release stays secure). FlutterFire already remaps `localhost`→`10.0.2.2`, so
+  the host address is not the problem.
+
 - **Testing `StreamProvider`s backed by `async*` repository streams:** `InMemoryRepository`'s
   `watchUser()`/`watchTasks()` are single-subscription `async*` generators. In a unit test, calling
   `container.read(someStreamProvider.future)` with no active listener lets Riverpod 3.x auto-dispose
