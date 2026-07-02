@@ -39,6 +39,13 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
   first — `container.listen(provider, (_, __) {})` (close it in `addTearDown`) — before awaiting
   `.future`. Widget tests don't hit this: the widget tree keeps the providers alive.
 
+- **Porting the design's CSS `filter: blur()` glows to Flutter:** neither `BoxShadow` (blurs only
+  around the shape — the fill keeps a hard edge) nor a few-stop `RadialGradient` (visible plateau
+  ring at the stop boundary) reproduces it. Use the direct equivalent: solid shape inside
+  `ImageFiltered(ImageFilter.blur(...))` with `TileMode.decal` (else the layer edge smears), sigma
+  scaled from the CSS spec (blur px ÷ element px), and a `RepaintBoundary` around it so per-frame
+  `setState` (e.g. card drags) doesn't re-run the filter. See the halo in `lib/ui/swipe_card.dart`.
+
 - **UI reading a `StreamProvider` (`userProvider`) inside a callback / bottom sheet:** the widget
   must establish an active listener before `ref.read(provider).value` — otherwise `.value` is null
   and the action silently no-ops. For a modal bottom sheet, make it a `ConsumerStatefulWidget` so it
