@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../domain/task.dart';
@@ -101,26 +103,33 @@ class SwipeCardState extends State<SwipeCard> with SingleTickerProviderStateMixi
   Widget build(BuildContext context) {
     final u = widget.urgency.clamp(0.0, 1.0);
     final sz = 340 + u * 160;
+    // Gaussian sigma scaled from the design spec: blur(62px) on a 300px ellipse.
+    final haloSigma = sz * (62 / 300);
     return LayoutBuilder(
       builder: (context, constraints) {
         _width = constraints.maxWidth;
         return Stack(
           children: [
-            // Halo: a single blurred ellipse anchored centre-bottom.
+            // Halo: solid ellipse through a true gaussian blur — the direct
+            // equivalent of the design's `filter: blur(62px)`. RepaintBoundary
+            // caches the blurred layer so drag repaints don't re-run the filter.
             Positioned(
               left: 0,
               right: 0,
               bottom: -130,
               child: Center(
-                child: Opacity(
-                  opacity: 0.12 + u * 0.5,
-                  child: Container(
-                    width: sz,
-                    height: sz * 0.86,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: haloColor(u),
-                      boxShadow: [BoxShadow(color: haloColor(u), blurRadius: 62, spreadRadius: 20)],
+                child: RepaintBoundary(
+                  child: Opacity(
+                    opacity: 0.12 + u * 0.5,
+                    child: ImageFiltered(
+                      imageFilter: ImageFilter.blur(
+                          sigmaX: haloSigma, sigmaY: haloSigma, tileMode: TileMode.decal),
+                      child: Container(
+                        width: sz,
+                        height: sz * 0.86,
+                        decoration:
+                            BoxDecoration(shape: BoxShape.circle, color: haloColor(u)),
+                      ),
                     ),
                   ),
                 ),
