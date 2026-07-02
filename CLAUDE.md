@@ -15,6 +15,9 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
   generality, no building for hypothetical futures. The simplest option that works wins.
 - **Keep files under ~1,000 lines.** Don't let any file grow past 1k lines without a very good,
   explicit reason. Split or refactor before it gets there.
+- **Rebase, never merge, when combining branches.** Accepting a PR or integrating a branch
+  must be done by rebasing (linear history) — do not create merge commits. Preserves a clean,
+  linear git history.
 
 ## Learnings
 <!-- Append project-specific learnings below as they're discovered. -->

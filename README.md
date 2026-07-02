@@ -177,6 +177,57 @@ which bypasses Google by using anonymous auth — it's the fast path to a popula
 
 ---
 
+## Building an APK to sideload onto your phone
+
+To hand-test on a phone **without** tethering it to your machine, build a standalone APK and copy it
+across. A **release** build is the right choice here:
+
+- It has `kDebugMode == false`, so `USE_EMULATOR` defaults to `false` — the APK talks to the **real**
+  `just-one-db69c` project. No emulator and no `adb reverse` are needed, and real Google Sign-In and
+  push work. (A debug APK would instead try to reach an emulator on the phone's own `localhost` and
+  hang — see [Picking a device](#picking-a-device--d-device).)
+- `android/app/build.gradle.kts` signs the release build with the **debug key**, so it builds and
+  installs with no keystore setup. That's fine for personal sideloading; it is **not** suitable for
+  the Play Store, which rejects debug-signed uploads.
+
+Build it from the repo root:
+
+```bash
+flutter build apk --release
+```
+
+The APK lands at:
+
+```
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+That single file is a "fat" APK containing every ABI (~simplest, a bit larger). To produce smaller
+per-architecture APKs instead (a Pixel 8 needs the `arm64-v8a` one), add `--split-per-abi`; the
+outputs land alongside it as `app-arm64-v8a-release.apk` etc.
+
+### Getting it onto the phone
+
+**Over USB (quickest if the phone is plugged in):**
+
+```bash
+adb install -r build/app/outputs/flutter-apk/app-release.apk
+```
+
+`-r` reinstalls over an existing copy, keeping its data. Requires USB debugging (see the tethered-
+phone setup under [Picking a device](#picking-a-device--d-device)).
+
+**Without a cable:** copy `app-release.apk` to the phone (email it to yourself, a cloud drive,
+Bluetooth, etc.), then tap it in the phone's file manager. Android will prompt you to allow
+**installing unknown apps** for whichever app you opened the file from — grant it, then confirm the
+install.
+
+> Because a sideloaded release build hits the live project, first launch goes through the real
+> welcome → Google Sign-In → onboarding flow. There's no seeded sample data — you're onboarding a
+> real account against `just-one-db69c`.
+
+---
+
 ## Running the tests
 
 The test suite is **Dart-fakes-only** (`fake_cloud_firestore` + `firebase_auth_mocks`) and needs
