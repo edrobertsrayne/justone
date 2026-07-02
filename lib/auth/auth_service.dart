@@ -17,7 +17,11 @@ class FirebaseAuthService implements AuthService {
   Future<void> signInWithGoogle() async {
     try {
       if (!_initialized) {
-        await GoogleSignIn.instance.initialize();
+        await GoogleSignIn.instance.initialize(
+          // Web OAuth client from google-services.json (type 3) — required for
+          // GoogleSignIn 7's Credential Manager flow to return a populated idToken.
+          serverClientId: '617222535260-3ioaosi1jhbg3ua5nudmrvshjno4cekb.apps.googleusercontent.com',
+        );
         _initialized = true;
       }
       final account = await GoogleSignIn.instance.authenticate();
