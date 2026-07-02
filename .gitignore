@@ -48,6 +48,9 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
+# Firebase emulator state persisted via --import/--export-on-exit
+/emulator-data/
+
 # Firebase config — contains project API keys; kept out of version control
 /lib/firebase_options.dart
 **/google-services.json

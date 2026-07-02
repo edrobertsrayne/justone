@@ -119,11 +119,19 @@ adb devices                                            # should list your target
 In one terminal, from the repo root:
 
 ```bash
-firebase emulators:start
+firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data
 ```
 
 This serves Auth (`:9099`), Firestore (`:8080`), and the Emulator UI at <http://localhost:4000>.
 Leave it running.
+
+The `--import`/`--export-on-exit` flags persist emulator state (users, Firestore docs) to
+`./emulator-data` (gitignored) across restarts. **Skip them and the emulator wipes all users on
+every restart** — but the app keeps its persisted sign-in on the device, so on the next launch it
+restores a session for a user the fresh emulator no longer knows. That surfaces as
+`INVALID_REFRESH_TOKEN` / `UNAUTHENTICATED` Firestore errors and a **hang on the Flutter splash**.
+If you ever hit that, clear the app's stored auth state with `adb shell pm clear com.example.justone`
+(an uninstall works too; `flutter clean` does **not**) and re-seed.
 
 **On an Android phone or emulator?** Also run the two `adb reverse` commands from
 [Picking a device](#picking-a-device--d-device) so the device can reach these ports. Desktop/web
