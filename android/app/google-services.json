@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "617222535260",
+    "project_id": "just-one-db69c",
+    "storage_bucket": "just-one-db69c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617222535260:android:04c3a0fec5ce4d0d200e99",
+        "android_client_info": {
+          "package_name": "com.example.justone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "617222535260-kh0erf3cn35qisc9bbvk23h5djo9ic3g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.justone",
+            "certificate_hash": "db0752fc37cb817acdbc426b87354f23565f0498"
+          }
+        },
+        {
+          "client_id": "617222535260-3ioaosi1jhbg3ua5nudmrvshjno4cekb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_82WAb68i8qOCeOgqeZMX_8-pZoGNesU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "617222535260-3ioaosi1jhbg3ua5nudmrvshjno4cekb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "617222535260-dtgne7iivl9gf520lppb8ervv25f69el.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.justone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
