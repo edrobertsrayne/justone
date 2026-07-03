@@ -52,3 +52,16 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
   owns its own `ref` and does `ref.watch(userProvider)` in `build`. Don't thread a borrowed
   `WidgetRef` from the caller into a plain `StatefulWidget` and call `listenManual` on it — that
   subscription is tied to the *caller's* element, not the sheet's, so it leaks on every open.
+
+- **`google_fonts` does NOT register a font under its plain family name, so bare
+  `TextStyle(fontFamily: 'Nunito Sans')` won't find it.** `GoogleFonts.nunitoSans()` loads the .ttf
+  under a *mangled* engine family name (`NunitoSans_regular`, `Newsreader_regular`, …) and returns a
+  `TextStyle` pointing at that. Code that styles text with a bare `fontFamily: 'Newsreader'` /
+  `'Nunito Sans'` string (the daily-flow screens do this instead of going through `TypeScale`) is a
+  *different* lookup that the mangled names never satisfy — with no pubspec `fonts:` declaration the
+  family is simply unregistered and the engine falls back to a platform serif, so the whole app
+  renders in the wrong font. Symptom: bundling the .ttf as `assets:` + `GoogleFonts` looks correct
+  and `FontManifest.json` has no error, yet on-device text is generic serif. Fix: declare the
+  families in pubspec's `fonts:` section (weights mapped to the shipped files) *in addition to* the
+  `assets:` entry google_fonts needs. `FontManifest.json` must list `Newsreader` and `Nunito Sans`;
+  guarded by `test/theme/fonts_bundle_test.dart`.
