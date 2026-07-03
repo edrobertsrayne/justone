@@ -53,6 +53,17 @@ Guidance for working on **Just One** (one-task-a-day chore app, Flutter + Fireba
   `WidgetRef` from the caller into a plain `StatefulWidget` and call `listenManual` on it — that
   subscription is tied to the *caller's* element, not the sheet's, so it leaks on every open.
 
+- **Physical-device runs need `--dart-define=USE_EMULATOR=false`, and app-only DNS failures on
+  the Pixel 8 mean stale per-uid state, not app code.** Debug defaults to the Firebase emulator
+  (`lib/main.dart`), whose `localhost` FlutterFire remaps to `10.0.2.2` — reachable only from an
+  Android *emulator* — so on the Pixel it looks like Firestore is offline. With the flag set, the
+  app then failed every `firestore.googleapis.com` lookup with `EAI_NODATA` while shell DNS
+  (`adb shell ping`) worked: DNS was broken *only for the app's uid*. The phone runs Tailscale
+  (owns DNS via MagicDNS); toggling the VPN didn't help, the uid was inside the VPN's allowed
+  ranges, and netd dumps showed nothing. What worked: `adb uninstall com.example.justone` +
+  reinstall — the fresh uid gets clean per-uid DNS state. Diagnose by comparing app-uid DNS vs
+  shell DNS before chasing manifest/permission theories.
+
 - **`google_fonts` does NOT register a font under its plain family name, so bare
   `TextStyle(fontFamily: 'Nunito Sans')` won't find it.** `GoogleFonts.nunitoSans()` loads the .ttf
   under a *mangled* engine family name (`NunitoSans_regular`, `Newsreader_regular`, …) and returns a
