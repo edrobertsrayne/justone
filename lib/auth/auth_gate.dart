@@ -15,6 +15,16 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Screens like Manage/Settings are pushed onto the root Navigator, which
+    // sits *above* this gate. Swapping our own child to WelcomeScreen doesn't
+    // remove them, so on a sign-out transition we pop back to the gate — else
+    // the user is stranded on a pushed screen even though Firebase signed out.
+    ref.listen(authProvider, (prev, next) {
+      final wasSignedIn = prev?.value != null;
+      if (wasSignedIn && next.value == null) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    });
     return ref.watch(authProvider).when(
           loading: () => const _Splash(),
           error: (_, __) => const WelcomeScreen(),
