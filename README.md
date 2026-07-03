@@ -264,13 +264,20 @@ The Dart fakes have no rules engine, so the owner-isolation rules (`firestore.ru
 
 ---
 
-## Not yet wired up
+## Push notifications / reminders
 
-- **Push notifications / reminders.** The `functions/` directory (TypeScript Cloud Functions) and
-  the FCM token registration / runtime permission flow are **Phase 6** and not implemented yet. The
-  settings screen currently only *writes* the reminder schedule; nothing sends reminders. FCM and
-  Cloud Scheduler can't be meaningfully emulated, so that work is verified on a real device against
-  `just-one-db69c`.
+FCM token registration + the Cloud Function (`functions/`) that scans user docs on a 15-minute
+schedule and sends reminders are implemented (Phase 6). They only work against the **real**
+`just-one-db69c` project — FCM and Cloud Scheduler can't be meaningfully emulated. The function
+must be deployed for reminders to fire:
+
+```bash
+firebase deploy --only functions
+```
+
+This provisions the `onSchedule("every 15 minutes")` Cloud Scheduler job automatically. Re-run it
+after any change under `functions/`. See `docs/superpowers/phase-6-manual-push-check.md` for the
+manual end-to-end check.
 
 ---
 
@@ -285,6 +292,6 @@ lib/
   ui/       screens + widgets (welcome, onboarding, daily, manage, settings, sheets)
   theme/    colour tokens, type scale, ThemeData
 tool/       dev-only scripts (seed_emulator.dart)
-functions/  Cloud Functions (Phase 6 — not active)
+functions/  Cloud Functions — 15-min reminder scan (Phase 6)
 docs/       design spec, backend decisions, implementation roadmap, plans/specs
 ```
