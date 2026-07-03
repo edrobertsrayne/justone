@@ -14,9 +14,9 @@ void main() {
     expect(haloColor(0), const Color.fromARGB(255, 95, 140, 99));
     expect(haloColor(1), const Color.fromARGB(255, 196, 104, 63));
     final mid = haloColor(0.5);
-    expect(mid.red, closeTo(145, 1));
-    expect(mid.green, closeTo(122, 1));
-    expect(mid.blue, closeTo(81, 1));
+    expect((mid.r * 255.0).round().clamp(0, 255), closeTo(145, 1));
+    expect((mid.g * 255.0).round().clamp(0, 255), closeTo(122, 1));
+    expect((mid.b * 255.0).round().clamp(0, 255), closeTo(81, 1));
   });
 
   test('haloColor clamps out-of-range input', () {

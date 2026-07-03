@@ -8,9 +8,8 @@ import 'repository.dart';
 /// In-memory fake repository (Phase 2). Streams replay the latest value to each
 /// new subscriber, then deliver live updates — adequate for a single-isolate fake.
 class InMemoryRepository implements Repository {
-  InMemoryRepository({required UserState user, required List<Task> tasks})
-      : _user = user,
-        _tasks = List<Task>.of(tasks);
+  InMemoryRepository({required this._user, required List<Task> tasks})
+      : _tasks = List<Task>.of(tasks);
 
   UserState _user;
   List<Task> _tasks;

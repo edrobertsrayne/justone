@@ -8,14 +8,11 @@ import 'messaging_service.dart';
 /// Owns the FCM token lifecycle: register on grant / app-open, and on rotation.
 class RegistrationController {
   RegistrationController({
-    required Repository repo,
-    required MessagingService messaging,
-    required Clock now,
-    required String platform,
-  })  : _repo = repo,
-        _messaging = messaging,
-        _now = now,
-        _platform = platform;
+    required this._repo,
+    required this._messaging,
+    required this._now,
+    required this._platform,
+  });
 
   final Repository _repo;
   final MessagingService _messaging;

@@ -24,8 +24,8 @@ class _DailyResetScopeState extends ConsumerState<DailyResetScope> with WidgetsB
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Re-check whenever the user or task stream first delivers (or updates).
-    ref.listenManual(userProvider, (_, __) => _maybeReset());
-    ref.listenManual(tasksProvider, (_, __) => _maybeReset());
+    ref.listenManual(userProvider, (_, _) => _maybeReset());
+    ref.listenManual(tasksProvider, (_, _) => _maybeReset());
     WidgetsBinding.instance.addPostFrameCallback((_) => _maybeReset());
   }
 

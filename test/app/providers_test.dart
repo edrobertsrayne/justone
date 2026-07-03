@@ -15,8 +15,8 @@ void main() {
     addTearDown(container.dispose);
 
     // Keep subscriptions alive to ensure providers don't dispose prematurely
-    addTearDown(container.listen(userProvider, (_, __) {}).close);
-    addTearDown(container.listen(tasksProvider, (_, __) {}).close);
+    addTearDown(container.listen(userProvider, (_, _) {}).close);
+    addTearDown(container.listen(tasksProvider, (_, _) {}).close);
 
     expect((await container.read(userProvider.future)).streak, 7);
     expect((await container.read(tasksProvider.future)).single.id, 'a');

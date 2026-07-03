@@ -8,7 +8,7 @@ void main() {
     final auth = MockFirebaseAuth(signedIn: true, mockUser: MockUser(uid: 'u1'));
     final container = ProviderContainer(overrides: [firebaseAuthProvider.overrideWithValue(auth)]);
     addTearDown(container.dispose);
-    addTearDown(container.listen(authProvider, (_, __) {}).close);
+    addTearDown(container.listen(authProvider, (_, _) {}).close);
     expect((await container.read(authProvider.future))?.uid, 'u1');
   });
 
@@ -16,7 +16,7 @@ void main() {
     final auth = MockFirebaseAuth(); // signed out
     final container = ProviderContainer(overrides: [firebaseAuthProvider.overrideWithValue(auth)]);
     addTearDown(container.dispose);
-    addTearDown(container.listen(authProvider, (_, __) {}).close);
+    addTearDown(container.listen(authProvider, (_, _) {}).close);
     expect(await container.read(authProvider.future), isNull);
   });
 }

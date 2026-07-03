@@ -24,8 +24,8 @@ void main() {
       [Task(id: 'b', title: 'B', kind: TaskKind.oneOff, createdAt: DateTime(2026, 6, 1), status: TaskStatus.benched)],
     );
     addTearDown(container.dispose);
-    addTearDown(container.listen(userProvider, (_, __) {}).close);
-    addTearDown(container.listen(tasksProvider, (_, __) {}).close);
+    addTearDown(container.listen(userProvider, (_, _) {}).close);
+    addTearDown(container.listen(tasksProvider, (_, _) {}).close);
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
@@ -47,8 +47,8 @@ void main() {
       const [],
     );
     addTearDown(container.dispose);
-    addTearDown(container.listen(userProvider, (_, __) {}).close);
-    addTearDown(container.listen(tasksProvider, (_, __) {}).close);
+    addTearDown(container.listen(userProvider, (_, _) {}).close);
+    addTearDown(container.listen(tasksProvider, (_, _) {}).close);
 
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,

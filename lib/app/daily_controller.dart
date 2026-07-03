@@ -10,10 +10,7 @@ import 'toast_controller.dart';
 /// The action layer for the daily loop: reads a snapshot, calls the Phase-1
 /// transition, fires any toast, and commits the result.
 class DailyController {
-  DailyController({required Repository repo, required ToastController toast, required Clock now})
-      : _repo = repo,
-        _toast = toast,
-        _now = now;
+  DailyController({required this._repo, required this._toast, required this._now});
 
   final Repository _repo;
   final ToastController _toast;

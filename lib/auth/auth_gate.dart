@@ -41,7 +41,7 @@ class AuthGate extends ConsumerWidget {
     });
     return ref.watch(authProvider).when(
           loading: () => const _Splash(),
-          error: (_, __) => const WelcomeScreen(),
+          error: (_, _) => const WelcomeScreen(),
           data: (user) {
             if (user == null) return const WelcomeScreen();
             return ref.watch(bootstrapProvider).when(
@@ -49,7 +49,7 @@ class AuthGate extends ConsumerWidget {
                   // Bootstrap only fails offline on a brand-new account; network is
                   // present right after Google sign-in (spec §C). Show the splash;
                   // it retries when the provider is re-read.
-                  error: (_, __) => const _Splash(),
+                  error: (_, _) => const _Splash(),
                   data: (_) => const DailyResetScope(
                     child: NotificationScope(child: HomeRouter()),
                   ),

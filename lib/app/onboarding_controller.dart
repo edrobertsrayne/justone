@@ -8,9 +8,7 @@ import 'providers.dart';
 
 /// Builds the onboarding batch seed (D23) and commits it in one WriteBatch.
 class OnboardingController {
-  OnboardingController({required Repository repo, required Clock now})
-      : _repo = repo,
-        _now = now;
+  OnboardingController({required this._repo, required this._now});
 
   final Repository _repo;
   final Clock _now;

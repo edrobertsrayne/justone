@@ -11,10 +11,7 @@ import 'toast_controller.dart';
 /// Add/edit/remove pool tasks. Each builds a task (or reuses domain.remove),
 /// then commits through the Repository seam.
 class PoolController {
-  PoolController({required Repository repo, required ToastController toast, required Clock now})
-      : _repo = repo,
-        _toast = toast,
-        _now = now;
+  PoolController({required this._repo, required this._toast, required this._now});
 
   final Repository _repo;
   final ToastController _toast;
