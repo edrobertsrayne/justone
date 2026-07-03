@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'auth/auth_gate.dart';
 import 'firebase_options.dart';
@@ -16,6 +17,10 @@ const kUseEmulator = bool.fromEnvironment('USE_EMULATOR', defaultValue: kDebugMo
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Fonts ship as bundled assets (see pubspec.yaml). Never fetch from
+  // fonts.gstatic.com at runtime: it fails offline and crashed the app on a
+  // host-lookup error. A missing weight now throws in dev instead of at users.
+  GoogleFonts.config.allowRuntimeFetching = false;
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (kUseEmulator) {
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);

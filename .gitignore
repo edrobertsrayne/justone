@@ -51,7 +51,8 @@ app.*.map.json
 # Firebase emulator state persisted via --import/--export-on-exit
 /emulator-data/
 
-# Firebase config — contains project API keys; kept out of version control
-/lib/firebase_options.dart
+# firebase_options.dart is committed: its values are client-side identifiers
+# (not secrets — they ship in the app binary), and gitignoring it breaks fresh
+# checkouts/CI builds. Security is enforced by Firestore rules + App Check.
 **/google-services.json
 **/GoogleService-Info.plist
