@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/daily_reset_scope.dart';
+import '../app/providers.dart';
 import '../notifications/notification_scope.dart';
 import '../theme/palette.dart';
 import '../ui/home_router.dart';
@@ -15,14 +16,27 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Screens like Manage/Settings are pushed onto the root Navigator, which
-    // sits *above* this gate. Swapping our own child to WelcomeScreen doesn't
-    // remove them, so on a sign-out transition we pop back to the gate — else
-    // the user is stranded on a pushed screen even though Firebase signed out.
     ref.listen(authProvider, (prev, next) {
-      final wasSignedIn = prev?.value != null;
-      if (wasSignedIn && next.value == null) {
+      // Screens like Manage/Settings are pushed onto the root Navigator, which
+      // sits *above* this gate. Swapping our own child to WelcomeScreen doesn't
+      // remove them, so on a sign-out transition we pop back to the gate — else
+      // the user is stranded on a pushed screen even though Firebase signed out.
+      if (prev?.value != null && next.value == null) {
         Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+      // The uid just changed, so repositoryProvider and its user/tasks streams
+      // are stale. They aren't autoDispose (controllers keep them alive across a
+      // sign-out), so their old elements linger; when the signed-in subtree next
+      // mounts it force-flushes the dirty chain *during build*, and Riverpod
+      // notifying the lingering listeners then calls setState() during build and
+      // throws. We reset the chain here instead — in a listener, i.e. outside the
+      // build phase — and eagerly read it back so the rebuild (and the listener
+      // notifications it triggers) happen now, not during the subtree's build.
+      // A plain invalidate isn't enough: the rebuild is lazy and would still land
+      // during build. See the re-login test in auth_gate_test.dart.
+      if (prev?.value?.uid != next.value?.uid) {
+        ref.invalidate(repositoryProvider);
+        ref.read(repositoryProvider);
       }
     });
     return ref.watch(authProvider).when(

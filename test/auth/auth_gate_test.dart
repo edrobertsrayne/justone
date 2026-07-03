@@ -1,4 +1,5 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -156,5 +157,44 @@ void main() {
 
     expect(find.byType(SettingsScreen), findsNothing, reason: 'settings route should be popped on sign-out');
     expect(find.byType(WelcomeScreen), findsOneWidget);
+  });
+
+  // Regression: signing out then signing back in *within the same session* (now
+  // possible since sign-out returns to WelcomeScreen instead of stranding the
+  // user). The auth-scoped provider chain must not be flushed synchronously
+  // during AuthGate's build with stale listeners, or Riverpod throws
+  // "setState() called during build".
+  testWidgets('re-login after sign-out does not throw setState-during-build', (tester) async {
+    final auth = MockFirebaseAuth(signedIn: true, mockUser: MockUser(uid: 'u1'));
+    final db = FakeFirebaseFirestore();
+    await db.doc('users/u1').set(userToFirestore(
+          UserState(timezone: 'UTC', lastActiveDate: DateTime(2026, 6, 24)),
+        ));
+    await db.collection('users/u1/tasks').doc('a').set(taskToFirestore(
+          Task(id: 'a', title: 'A', kind: TaskKind.oneOff, dueAt: DateTime(2026, 6, 20), createdAt: DateTime(2026, 6, 1)),
+        ));
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        firebaseAuthProvider.overrideWithValue(auth),
+        firestoreProvider.overrideWithValue(db),
+        nowProvider.overrideWithValue(() => DateTime(2026, 6, 24, 9)),
+        bootstrapProvider.overrideWith((ref) async {}),
+        messagingServiceProvider.overrideWithValue(FakeMessagingService()),
+      ],
+      child: const MaterialApp(home: AuthGate()),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeRouter), findsOneWidget);
+
+    await auth.signOut();
+    await tester.pumpAndSettle();
+    expect(find.byType(WelcomeScreen), findsOneWidget);
+
+    // Sign back in as the same user without restarting the app.
+    await auth.signInWithCredential(GoogleAuthProvider.credential(idToken: 'i', accessToken: 'a'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull, reason: 'no setState()-during-build on re-login');
+    expect(find.byType(HomeRouter), findsOneWidget);
   });
 }
