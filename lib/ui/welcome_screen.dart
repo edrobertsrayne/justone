@@ -23,7 +23,8 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     });
     try {
       await ref.read(authServiceProvider).signInWithGoogle();
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Sign-in failed: $e\n$st');
       if (mounted) setState(() => _error = 'Sign-in failed. Please try again.');
     } finally {
       if (mounted) setState(() => _loading = false);

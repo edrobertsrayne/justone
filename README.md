@@ -183,6 +183,14 @@ committed; iOS needs its `GoogleService-Info.plist`.)
 For everyday local development against the emulator, prefer the **seed entry point** (step 2),
 which bypasses Google by using anonymous auth — it's the fast path to a populated, interactive app.
 
+**Seeing "Sign-in failed. Please try again." on a physical phone?** This is the symptom of running
+in the default emulator mode: the Google credential is obtained fine, but the follow-up
+`signInWithCredential` call is routed to the local Auth emulator, and FlutterFire's
+`localhost`→`10.0.2.2` remap for Android only resolves on an **emulator/AVD** — not real hardware —
+so the call fails. Re-run with `--dart-define=USE_EMULATOR=false` as above. The welcome screen logs
+the real exception via `debugPrint` (see the `flutter run` console) if it fails for another reason,
+e.g. the Google sign-in provider not being enabled for the project in the Firebase console.
+
 ---
 
 ## Building an APK to sideload onto your phone
